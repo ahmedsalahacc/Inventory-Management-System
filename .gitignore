@@ -132,3 +132,6 @@ dmypy.json
 node_modules
 .node_modules
 node_modules/
+
+# ---- draw io files ----
+*.drawio
