@@ -8,7 +8,7 @@ app.py: initializes the backend system with the configs in /environment.config
 import environment.config as config
 from controllers.inventory_controller import router as invRouter
 from controllers.warehouse_controller import router as whRouter
-from models import db
+from models import DBinit
 
 import os
 
@@ -27,11 +27,12 @@ def createFlaskApp() -> tuple:
 
     # inititalizing extensions
     CORS(app)
-    db.init_app(app)
+    db_init = DBinit()
+    db_filepath = db_init.init_db()
 
     # @TODO setting flask configs
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    # app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db" NOT IMPLEMENTED
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:"+db_filepath
 
     # Blueprints
     app.register_blueprint(invRouter)

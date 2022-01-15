@@ -1,8 +1,6 @@
 from flask import Blueprint
 
 
-from models import db
-
 router = Blueprint("inventory", __name__)
 
 
