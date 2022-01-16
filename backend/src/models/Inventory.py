@@ -1,0 +1,161 @@
+from models import BaseModel, gen_id
+
+
+class InventoryModel(BaseModel):
+    '''
+    ORM for Inventory table with the following structure
+
+    inventory(
+        id CHARACTER(10) NOT NULL PRIMARY KEY,
+        category TEXT NOT NULL,
+        warehouse_id CHARACTER(10) NULL,
+        FOREIGN KEY(warehouse_id) REFERENCES warehouse(id)
+    )
+    '''
+
+    def __init__(self, db_filename: str):
+        super(InventoryModel, self).__init__(db_filename)
+
+    def insert(self, data_tuple: tuple):
+        '''
+        Inserts a new record in inventory table
+
+        Parameters
+        ----------
+        data_tuple: tuple
+            tuple of new values (category, warehouse_id)
+        '''
+        # aquiring cursor
+        cursor = self.conn.cursor()
+
+        # sql script
+        sql_script = '''
+        INSERT INTO inventory VALUES (?, ?, ?)
+        '''
+
+        # executing script
+        data_tuple = (gen_id(), *data_tuple)
+        cursor.execute(sql_script, data_tuple)
+        self.conn.commit()
+
+        # conceding cursor
+        cursor.close()
+
+    def delete(self, id: str):
+        '''
+        Deletes a record from inventory table
+
+        Parameters
+        ----------
+        id: str
+        '''
+        # aquiring cursor
+        cursor = self.conn.cursor()
+
+        # sql script
+        sql_script = '''
+        DELETE FROM inventory WHERE id = ?
+        '''
+
+        # executing script
+        cursor.execute(sql_script, (id,))
+        self.conn.commit()
+
+        # conceding cursor
+        cursor.close()
+
+    def update(self, id: str, new_data: tuple):
+        '''
+        Updates a record of the inventory table using id
+
+        Parameters
+        ----------
+        id: str
+            id of the record in the db
+        new_data: tuple
+            tuple of new values (category, warehouse_id)
+        '''
+        # aquiring cursor
+        cursor = self.conn.cursor()
+
+        # sql script
+        sql_script = '''
+        UPDATE inventory
+        SET category = ? ,
+            warehouse_id = ? 
+        WHERE id=?
+        '''
+
+        # executing script
+        new_data = (*new_data, id)
+        cursor.execute(sql_script, new_data)
+        self.conn.commit()
+
+        # conceding cursor
+        cursor.close()
+
+    def getByID(self, id: str):
+        '''
+        gets a record from the inventory table using id
+
+        Parameters
+        ----------
+        id: str
+            id of the record in the db
+
+        Returns
+        -------
+        query: tuple
+            represents the result 
+        '''
+        # aquiring cursor
+        cursor = self.conn.cursor()
+
+        # sql script
+        sql_script = '''
+        SELECT * FROM inventory WHERE id = ? 
+        '''
+
+        # executing script
+        cursor.execute(sql_script, (id,))
+
+        query = cursor.fetchone()
+
+        # conceding cursor
+        cursor.close()
+
+        return query
+
+    def getAll(self, order: str = 'ASC'):
+        '''
+        gets a record from the inventory table using id
+
+        Parameters
+        ----------
+        order: str Default = 'asc'
+            arrangement of the returned query
+            ASC: ascending order
+            DESC: descending order
+
+        Returns
+        -------
+        query: list
+            results list
+        '''
+        # aquiring cursor
+        cursor = self.conn.cursor()
+
+        # sql script
+        sql_script = f'''
+        SELECT * FROM inventory ORDER BY category {order} 
+        '''
+
+        # executing script
+        cursor.execute(sql_script)
+
+        query = cursor.fetchall()
+
+        # conceding cursor
+        cursor.close()
+
+        return query

@@ -1,9 +1,41 @@
 import os
 import sqlite3
+import uuid
 '''initialize db to apply factory pattern in flask
     to avoid circuilar imports
 '''
-from environment import config
+from environment.config import config
+
+
+def gen_id():
+    return str(uuid.uuid4())[:10]
+
+
+class BaseModel:
+    def __init__(self, db_filepath):
+        self.db_filepath = db_filepath
+
+        # Establishing connection
+        try:
+            self.conn = sqlite3.connect(self.db_filepath)
+        except Exception as e:
+            print(e)
+
+    def insert(self):
+        ''' Inserts item into the database'''
+        raise NotImplementedError
+
+    def delete(self):
+        ''' Deletes item from the database'''
+        raise NotImplementedError
+
+    def update(self):
+        ''' Updates a record in the database'''
+        raise NotImplementedError
+
+    def get(self):
+        ''' Gets a record from the database'''
+        raise NotImplementedError
 
 
 class DBinit:
@@ -13,7 +45,8 @@ class DBinit:
         '''
         cwd = os.getcwd()
         db_dirname = 'dbfiles'
-        db_filename = config.DB_FILE_NAME
+        print(config['DB'])
+        db_filename = config['DB']['DB_FILE_NAME']
 
         # check if the db folder exists
         db_dirpath = self.__checkDBModelDir(cwd, db_dirname)
@@ -28,6 +61,31 @@ class DBinit:
 
         return db_filepath
 
+    def __checkDBModelDir(self, path: str, dirname: str):
+        '''
+        Checks the existence of the database directory
+
+        Parameters
+        ----------
+        path: str
+            path of the current directory
+        dirname: str
+            database directory name
+
+        Returns
+        -------
+
+        path: str
+            database directory path
+        '''
+        path = os.path.join(path, dirname)
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            print(f"[DB Setting] Successfully DB dir at {path}")
+        print("[DB Setting] DB dir already exists")
+
+        return path
+
     def __writeTables(self, connection: sqlite3.Connection, cursor: sqlite3.Connection.cursor):
         '''
         Builds the database tables with an internal script
@@ -41,6 +99,22 @@ class DBinit:
         '''
 
         # sql scripts
+        sql_script_wh = '''
+        CREATE TABLE warehouse(
+            id CHARACTER(10) NOT NULL PRIMARY KEY,
+            name TEXT NOT NULL,
+            location TEXT NOT NULL
+        );
+        '''
+
+        sql_script_inventory = '''
+        CREATE TABLE inventory(
+            id CHARACTER(10) NOT NULL PRIMARY KEY,
+            category TEXT NOT NULL,
+            warehouse_id CHARACTER(10) NULL,
+            FOREIGN KEY(warehouse_id) REFERENCES warehouse(id)
+        );
+        '''
         sql_script_shipment = '''
         CREATE TABLE shipment (
             id CHARACTER(10) NOT NULL PRIMARY KEY,
@@ -51,7 +125,9 @@ class DBinit:
             description Text NULL,
             shipper_vehicle_id NUMBER NULL,
             created_date TEXT NOT NULL,
-            shipping_time TEXT NULL
+            shipping_time TEXT NULL,
+            inventory CHARACTER(10) NOT NULL,
+            FOREIGN KEY(inventory) references inventory(id)
         );
         '''
 
@@ -63,24 +139,6 @@ class DBinit:
             expected_shipping_date  TEXT NOT NULL,
             shipment_id CHARACTER(10),
             FOREIGN KEY(shipment_id) REFERENCES shipment(id)
-        );
-        '''
-
-        sql_script_inventory = '''
-        CREATE TABLE inventory(
-            id CHARACTER(10) NOT NULL PRIMARY KEY,
-            category TEXT NOT NULL,
-            shipment_id CHARACTER(10),
-            FOREIGN KEY(shipment_id) REFERENCES shipment(id)
-        );
-        '''
-
-        sql_script_wh = '''
-        CREATE TABLE warehouse(
-            id CHARACTER(10) NOT NULL PRIMARY KEY,
-            name TEXT NOT NULL,
-            inventory_id CHARACTER(10) NULL,
-            FOREIGN KEY(inventory_id) REFERENCES inventory(id)
         );
         '''
 
@@ -107,30 +165,5 @@ class DBinit:
             print("[DB Setting] Successfully created table warehouse")
         except:
             print("[DB Setting] table warehouse already exists or some error occured")
-
         connection.commit()
-
-    def __checkDBModelDir(self, path: str, dirname: str):
-        '''
-        Checks the existence of the database directory
-
-        Parameters
-        ----------
-        path: str
-            path of the current directory
-        dirname: str
-            database directory name
-
-        Returns
-        -------
-
-        path: str
-            database directory path
-        '''
-        path = os.path.join(path, dirname)
-        if not os.path.isdir(path):
-            os.mkdir(path)
-            print(f"[DB Setting] Successfully DB dir at {path}")
-        print("[DB Setting] DB dir already exists")
-
-        return path
+        cursor.close()
