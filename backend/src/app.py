@@ -42,10 +42,10 @@ def createFlaskApp() -> tuple:
     app.register_blueprint(whRouter)
 
     # random tests
-    from models.seed import seedWarehouseData, seedInventoryData
+    from models.seed import seedWarehouseData, seedInventoryData, seedShipmentData
     # seedWarehouseData()
-    seedInventoryData()
-
+    # seedInventoryData()
+    seedShipmentData()
     return app
 
 

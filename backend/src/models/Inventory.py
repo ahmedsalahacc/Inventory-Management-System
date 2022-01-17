@@ -34,12 +34,15 @@ class InventoryModel(BaseModel):
         '''
 
         # executing script
-        data_tuple = (gen_id(), *data_tuple)
+        id = gen_id()
+        data_tuple = (id, *data_tuple)
         cursor.execute(sql_script, data_tuple)
         self.conn.commit()
 
         # conceding cursor
         cursor.close()
+
+        return id
 
     def delete(self, id: str):
         '''

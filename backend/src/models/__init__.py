@@ -1,8 +1,9 @@
 import os
 import sqlite3
 import uuid
-'''initialize db to apply factory pattern in flask
-    to avoid circuilar imports
+'''
+contains the initialization of the base tables
+wrote sql instead of using sqlalchemy to demonstrate my SQL skill
 '''
 from environment.config import config
 
@@ -112,9 +113,10 @@ class DBinit:
             id CHARACTER(10) NOT NULL PRIMARY KEY,
             category TEXT NOT NULL,
             warehouse_id CHARACTER(10) NULL,
-            FOREIGN KEY(warehouse_id) REFERENCES warehouse(id)
+            FOREIGN KEY(warehouse_id) REFERENCES warehouse(id) ON DELETE CASCADE
         );
         '''
+
         sql_script_shipment = '''
         CREATE TABLE shipment (
             id CHARACTER(10) NOT NULL PRIMARY KEY,
@@ -127,33 +129,33 @@ class DBinit:
             created_date TEXT NOT NULL,
             shipping_time TEXT NULL,
             inventory CHARACTER(10) NOT NULL,
-            FOREIGN KEY(inventory) references inventory(id)
+            shipment_details_id CHARACTER(10) NOT NULL,
+            FOREIGN KEY(inventory) references inventory(id) ON DELETE CASCADE
         );
         '''
 
         sql_script_sh_data = '''
-        CREATE TABLE shipment_data(
+        CREATE TABLE shipment_details(
             id CHARACTER(10) NOT NULL PRIMARY KEY,
             shipped_from TEXT NOT NULL,
             shipped_to TEXT NOT NULL,
-            expected_shipping_date  TEXT NOT NULL,
-            shipment_id CHARACTER(10),
-            FOREIGN KEY(shipment_id) REFERENCES shipment(id)
+            expected_shipping_date  TEXT NOT NULL
         );
         '''
 
         # execute and commit
+
+        try:
+            cursor.execute(sql_script_sh_data)
+            print("[DB Setting] Successfully created table shipment_details")
+        except:
+            print(
+                "[DB Setting] table shipment_data already exists or some error occured")
         try:
             cursor.execute(sql_script_shipment)
             print("[DB Setting] Successfully created table shipment")
         except:
             print("[DB Setting] table shipment already exists or some error occured")
-        try:
-            cursor.execute(sql_script_sh_data)
-            print("[DB Setting] Successfully created table shipment_data")
-        except:
-            print(
-                "[DB Setting] table shipment_data already exists or some error occured")
         try:
             cursor.execute(sql_script_inventory)
             print("[DB Setting] Successfully created table inventory")
@@ -165,5 +167,6 @@ class DBinit:
             print("[DB Setting] Successfully created table warehouse")
         except:
             print("[DB Setting] table warehouse already exists or some error occured")
+
         connection.commit()
         cursor.close()

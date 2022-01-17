@@ -1,5 +1,6 @@
 from models.Inventory import InventoryModel
 from models.Warehouse import WarehouseModel
+from models.Shipment import ShipmentModel
 from environment.config import config
 
 # seeding items into the database
@@ -57,4 +58,33 @@ def seedInventoryData():
 
 
 def seedShipmentData():
-    pass
+    '''seeds shipment data into database'''
+    shDB = ShipmentModel(DB_FILEPATH)
+    # seed shipment
+    # insert
+    data1 = ('hello', 'hello', 'hello', 'hello', 'hello',
+             69, '2022-07-02', '2022-07-12', '8ba0bf39-5')
+    datash1 = ('Ahmed Salah', 'Ahmed Salah', '2022-07-12')
+    shDB.insert(data1, datash1)
+    print("Inserted shipment details")
+    # retrieve
+    query = shDB.getAll()
+    print('Query', query)
+    # delete
+    print("deleting")
+    shDB.delete('a175e9e4-1')
+    print(query)
+    # update
+    print("updating")
+    new_data = ('samy', 'SALALALAAL', 'Ahmed', 'Salah', 'hello',
+                69, '2022-07-02', '2022-07-12', '8db71e96-a')
+    datash1 = ('Ahmed Salah', 'Ahmed Salah Keda Keda', '2022-07-14')
+    shDB.update('3f4b94c1-9', new_data, datash1)
+    query = shDB.getAll()
+    print(query)
+    print("------------")
+    print('DDs')
+    print(shDB.printALLDDs())
+    #-- sh2
+    #-- sh3
+    #-- sh4
