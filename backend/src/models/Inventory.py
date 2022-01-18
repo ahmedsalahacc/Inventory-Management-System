@@ -6,10 +6,11 @@ class InventoryModel(BaseModel):
     ORM for Inventory table with the following structure
 
     inventory(
-        id CHARACTER(10) NOT NULL PRIMARY KEY,
+       id CHARACTER(10) NOT NULL PRIMARY KEY,
+        name TEXT NOT NULL,
         category TEXT NOT NULL,
+        desc TEXT NULL,
         warehouse_id CHARACTER(10) NULL,
-        FOREIGN KEY(warehouse_id) REFERENCES warehouse(id)
     )
     '''
 
@@ -23,14 +24,14 @@ class InventoryModel(BaseModel):
         Parameters
         ----------
         data_tuple: tuple
-            tuple of new values (category, warehouse_id)
+            tuple of new values (name, category, desc, warehouse_id)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
 
         # sql script
         sql_script = '''
-        INSERT INTO inventory VALUES (?, ?, ?)
+        INSERT INTO inventory VALUES (?, ?, ?, ?, ?)
         '''
 
         # executing script
@@ -76,7 +77,7 @@ class InventoryModel(BaseModel):
         id: str
             id of the record in the db
         new_data: tuple
-            tuple of new values (category, warehouse_id)
+            tuple of new values (name, category, desc, warehouse_id)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
@@ -84,7 +85,9 @@ class InventoryModel(BaseModel):
         # sql script
         sql_script = '''
         UPDATE inventory
-        SET category = ? ,
+        SET name = ?,
+            category = ?,     
+            desc = ?,
             warehouse_id = ? 
         WHERE id=?
         '''
@@ -116,7 +119,12 @@ class InventoryModel(BaseModel):
 
         # sql script
         sql_script = '''
-        SELECT * FROM inventory WHERE id = ? 
+        SELECT inventory.id, inventory.name, inventory.category,
+            inventory.desc, inventory.warehouse_id,
+            warehouse.name, warehouse.location
+        FROM inventory JOIN warehouse
+        ON inventory.warehouse_id = warehouse.id
+        WHERE inventory.id = ?
         '''
 
         # executing script
@@ -150,7 +158,12 @@ class InventoryModel(BaseModel):
 
         # sql script
         sql_script = f'''
-        SELECT * FROM inventory ORDER BY category {order} 
+        SELECT inventory.id, inventory.name, inventory.category,
+            inventory.desc, inventory.warehouse_id,
+            warehouse.name, warehouse.location
+        FROM inventory JOIN warehouse
+        ON inventory.warehouse_id = warehouse.id
+        ORDER BY category {order} 
         '''
 
         # executing script

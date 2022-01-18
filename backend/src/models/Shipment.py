@@ -191,9 +191,7 @@ class ShipmentModel(BaseModel):
         created_date TEXT NOT NULL,
         shipping_time TEXT NULL,
         inventory CHARACTER(10) NOT NULL,
-        FOREIGN KEY(inventory) references inventory(id)
-        shipment_details_id CHARACTER(10) NOT NULL,
-        FOREIGN KEY(shipment_details_id) references shipment_details(id)
+        shipment_details_id CHARACTER(10) NOT NULL
     );
     '''
 

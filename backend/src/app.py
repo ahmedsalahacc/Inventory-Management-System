@@ -5,9 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 '''
 app.py: initializes the backend system with the configs in /environment.config
 '''
+
 from environment.config import config
-from controllers.inventory_controller import router as invRouter
-from controllers.warehouse_controller import router as whRouter
 from models import DBinit
 
 import os
@@ -33,19 +32,26 @@ def createFlaskApp() -> tuple:
     # updating db path in config dict
     config['DB']['DB_FILEPATH'] = db_filepath
 
-    # @TODO setting flask configs
+    # setting flask configs
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:"+db_filepath
 
     # Blueprints
+    from controllers.inventory_controller import router as invRouter
+    from controllers.warehouse_controller import router as whRouter
+    from controllers.shipment_controller import router as shRouter
+    from controllers.handlers import handler
+
     app.register_blueprint(invRouter)
     app.register_blueprint(whRouter)
+    app.register_blueprint(shRouter)
+    app.register_blueprint(handler)
 
     # random tests
     from models.seed import seedWarehouseData, seedInventoryData, seedShipmentData
     # seedWarehouseData()
     # seedInventoryData()
-    seedShipmentData()
+    # seedShipmentData()
     return app
 
 
