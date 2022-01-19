@@ -118,7 +118,7 @@ class DBinit:
             FOREIGN KEY(warehouse_id) REFERENCES warehouse(id) ON DELETE CASCADE
         );
         '''
-
+        # @TODO make desc -> address
         sql_script_shipment = '''
         CREATE TABLE shipment (
             id CHARACTER(10) NOT NULL PRIMARY KEY,
@@ -126,7 +126,7 @@ class DBinit:
             status Character(10) NOT NULL,
             shelfIndex Text NOT NULL,
             category TEXT NOT NULL,
-            description Text NULL,
+            description NOT NULL,
             shipper_vehicle_id NUMBER NULL,
             created_date TEXT NOT NULL,
             shipping_time TEXT NULL,

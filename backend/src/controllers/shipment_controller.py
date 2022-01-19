@@ -31,8 +31,8 @@ def showShipmentByID(id):
     return "Shipment"
 
 
-@router.route("/shipments/<id>", methods=['POST'])
-def createShipment(id):
+@router.route("/shipments/", methods=['POST'])
+def createShipment():
     return "Shipment"
 
 
