@@ -1,29 +1,30 @@
 import React from 'react'
 import { Alert, AlertTitle } from '@mui/material';
 
-import WarehouseForm from '../Components/WarehouseForm';
-import Table from '../Components/Table'
+import InventoryForm from '../Components/InventoryForm';
+import Table from '../Components/Table';
 
-function Warehouse() {
-    return (
+
+function Inventories() {
+   return (
         <div style={{
             transform:'translate(20%, 1%)',
-            color:"black",
-            marginBottom:"3%"
+            color:"black"
         }}>
             <div className="container">
                <Alert style={{
                    width:'80%'
                }} severity="info">
-                <AlertTitle>No warehouses to show</AlertTitle>
-                Add a new warehouse using the form below 👇
+                <AlertTitle>No inventories to show</AlertTitle>
+                Add a new inventory using the form below 👇
                 </Alert>
             </div>
             <Table/>
-            <WarehouseForm/>
+            <InventoryForm/>
+            <br/>
 
         </div>
     )
 }
 
-export default Warehouse
+export default Inventories

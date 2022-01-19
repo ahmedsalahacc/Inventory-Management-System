@@ -4,6 +4,7 @@ import { Container} from '@mui/material';
 import { Field } from '@mui/material';
 
 import ShipmentForm from '../Components/ShipmentForm'
+import Table from '../Components/Table'
 
 function Shipments() {
     return (
@@ -21,8 +22,9 @@ function Shipments() {
                 Add a new shipment using the form below 👇
                 </Alert>
             </div>
+            <Table/>
             <ShipmentForm/>
-           
+           <br/>
         </div>
     )
 }

@@ -5,10 +5,11 @@ const ShipmentForm =()=>{
         <form style={{
             width:"50%",
             marginTop:"2%",
-            marginLeft:"10%"
+            marginLeft:"10%",
+            
         }}>
             <fieldset>
-                <legend>Add a new Shipment</legend>
+                <legend>Add Shipment</legend>
                 <div class="mb-3">
                     <div className="row">
                         <div className="col-lg-6">

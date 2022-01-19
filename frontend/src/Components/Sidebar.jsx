@@ -26,8 +26,8 @@ const  Menu= () => {
     return ( 
     <ul>
 
-        <MenuItem content='Home' to='/'/>
-        <MenuItem content='Warehouses' to='/warehouses'/>
+        <MenuItem content='Warehouses' to='/'/>
+        <MenuItem content='Inventories' to='/inventories'/>
         <MenuItem content='Shipments' to='/shipments'/>
 
     </ul> 
