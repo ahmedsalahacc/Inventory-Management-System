@@ -186,7 +186,7 @@ class ShipmentModel(BaseModel):
         status Character(10) NOT NULL,
         shelfIndex Text NOT NULL,
         category TEXT NOT NULL,
-        description Text NULL,
+        address Text NULL,
         shipper_vehicle_id NUMBER NULL,
         created_date TEXT NOT NULL,
         shipping_time TEXT NULL,
@@ -207,9 +207,9 @@ class ShipmentModel(BaseModel):
         ----------
         data_tuple: tuple
             tuple of shipping values in the form of 
-            (name, status, shelfIndex, category, description,
+            (name, status, shelfIndex, category, address,
                 shipper_vehicle, created_date, shipping_time, 
-                inventory)
+                inventory_id)
         shipment_details: tuple 
             tuple of shipment details in the form 
             (shipped_from, shipped_to, expected_shipping_date)
@@ -249,6 +249,7 @@ class ShipmentModel(BaseModel):
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
+        self.conn.execute("PRAGMA foreign_keys = ON")
 
         # sql script
         sql_script = '''
@@ -297,11 +298,11 @@ class ShipmentModel(BaseModel):
             status = ?,
             shelfIndex = ?,
             category = ?,
-            description = ?,
+            address = ?,
             shipper_vehicle_id = ?,
             created_date = ?,
             shipping_time = ?,
-            inventory = ?,
+            inventory_id = ?,
             shipment_details_id = ?
         WHERE id=?
         '''
@@ -367,9 +368,23 @@ class ShipmentModel(BaseModel):
 
         # sql script to join between all tables
         sql_script = f'''
-        SELECT * 
+        SELECT 
+            shipment.id,
+            shipment.name,
+            shipment.status,
+            shipment.shelfIndex,
+            shipment.category,
+            shipment.address,
+            shipment.shipper_vehicle_id,
+            shipment.created_date,
+            shipment.shipping_time,
+            inventory.name,
+            shipment_details.shipped_from,
+            shipment_details.shipped_to
         FROM shipment JOIN shipment_details
         ON shipment.shipment_details_id = shipment_details.id
+        JOIN inventory
+        ON shipment.inventory_id = inventory.id
         ORDER BY created_date {order} 
         '''
 

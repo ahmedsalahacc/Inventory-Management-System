@@ -126,13 +126,14 @@ class DBinit:
             status Character(10) NOT NULL,
             shelfIndex Text NOT NULL,
             category TEXT NOT NULL,
-            description NOT NULL,
+            address NOT NULL,
             shipper_vehicle_id NUMBER NULL,
             created_date TEXT NOT NULL,
             shipping_time TEXT NULL,
-            inventory CHARACTER(10) NOT NULL,
+            inventory_id CHARACTER(10) NOT NULL,
             shipment_details_id CHARACTER(10) NOT NULL,
-            FOREIGN KEY(inventory) references inventory(id) ON DELETE CASCADE
+            FOREIGN KEY(inventory_id) REFERENCES inventory(id) ON DELETE CASCADE,
+            FOREIGN KEY(shipment_details_id) REFERENCES shipment_details(id) ON DELETE CASCADE
         );
         '''
 

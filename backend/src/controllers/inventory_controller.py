@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort
 '''
-the file contains the routers of the inventory
+This script contains the routers that interface f ff with the inventory model
 '''
 from models.Inventory import InventoryModel
 

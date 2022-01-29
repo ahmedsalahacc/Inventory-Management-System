@@ -39,6 +39,7 @@ def createWarehouse():
     data = (name, location)
 
     # check if there is None in the data (since all required in the db Model)
+    print(data)
     if None in data:
         print('None in data')
         abort(500)
@@ -55,14 +56,39 @@ def createWarehouse():
 
 @router.route("/warehouses/<id>")
 def showWareHouseByID(id):
+    dbModel = WarehouseModel(DB_FILENAME)
     return "Warehouse"
 
 
 @router.route("/warehouses/<id>", methods=['PUT'])
 def updateWarehouse(id):
-    return "Warehouse"
+    # get the form data
+    name = request.form.get('name', None)
+    location = request.form.get('location', None)
+    data = (name, location)
+
+    # check if there is None in the data (since all required in the db Model)
+    if None in data:
+        print('None in data')
+        abort(500)
+
+    # add to database
+    dbModel = WarehouseModel(DB_FILENAME)
+    dbModel.update(id, data)
+
+    return {
+        'code': 200,
+        'message': 'success'
+    }
 
 
 @router.route("/warehouses/<id>", methods=['DELETE'])
 def deleteWareHouse(id):
-    return "Warehouse"
+
+    dbModel = WarehouseModel(DB_FILENAME)
+    dbModel.delete(id)
+
+    return {
+        'code': 200,
+        'message': 'success'
+    }
