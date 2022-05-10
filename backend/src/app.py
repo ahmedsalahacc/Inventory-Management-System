@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect, jsonify, url_for, Blueprint
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 
 '''
 app.py: initializes the backend system with the configs in /environment.config

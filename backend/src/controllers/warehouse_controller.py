@@ -17,7 +17,7 @@ def home():
     return redirect('/warehouses')
 
 
-@router.route("/warehouses")
+@router.route("/warehouse/all")
 def showAllWarehouses():
 
     # @TODO try catch
@@ -31,16 +31,16 @@ def showAllWarehouses():
     }
 
 
-@router.route("/warehouses", methods=['POST'])
+@router.route("/warehouse", methods=['POST'])
 def createWarehouse():
     # get the form data
-    name = request.form.get('name', None)
-    location = request.form.get('location', None)
+    name = request.get_json().get('name', None)
+    location = request.get_json().get('location', None)
     data = (name, location)
+    print(request.get_json())
 
-    # check if there is None in the data (since all required in the db Model)
-    print(data)
-    if None in data:
+    # check if there is None in the data (since all required in the db Model) or length < 1
+    if None in data or any([len(i) < 1 for i in data]):
         print('None in data')
         abort(500)
 
@@ -54,13 +54,13 @@ def createWarehouse():
     }
 
 
-@router.route("/warehouses/<id>")
+@router.route("/warehouse/<id>")
 def showWareHouseByID(id):
     dbModel = WarehouseModel(DB_FILENAME)
     return "Warehouse"
 
 
-@router.route("/warehouses/<id>", methods=['PUT'])
+@router.route("/warehouse/<id>", methods=['PUT'])
 def updateWarehouse(id):
     # get the form data
     name = request.form.get('name', None)
@@ -82,7 +82,7 @@ def updateWarehouse(id):
     }
 
 
-@router.route("/warehouses/<id>", methods=['DELETE'])
+@router.route("/warehouse/<id>", methods=['DELETE'])
 def deleteWareHouse(id):
 
     dbModel = WarehouseModel(DB_FILENAME)

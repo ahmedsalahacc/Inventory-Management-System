@@ -1,0 +1,11 @@
+.container__style{
+    width: 50%;
+}
+
+.table__style{
+    max-height: 30vh;
+    overflow-y: scroll;
+}
+.table__btn{
+    margin: 1px;
+}
