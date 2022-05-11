@@ -5,6 +5,8 @@ This script contains the routers that interface f ff with the inventory model
 from models.Inventory import InventoryModel
 
 from environment.config import config
+from controllers.utils import checkEmptyOrNone
+
 
 router = Blueprint("inventory", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
@@ -27,17 +29,15 @@ def showAllInventories():
 @router.route("/inventories", methods=['POST'])
 def createInventory():
     # get the form data
-    category = request.form.get('category', None)
-    warehouse_id = request.form.get('warehouse_id', None)
-    desc = request.form.get('desc', None)
-    name = request.form.get('name', None)
+    category = request.get_json().get('category', None)
+    warehouse_id = request.get_json().get('warehouse_id', None)
+    desc = request.get_json().get('desc', None)
+    name = request.get_json().get('name', None)
 
     data = (name, category, desc, warehouse_id)
 
-    # check if there is None in the data (since all required in the db Model)
-    if None in (name, category, warehouse_id):
-        print('None in data')
-        abort(500)
+    # check if there is None in the data (since all required in the db Model) or length < 1
+    checkEmptyOrNone(data, lambda: abort(500))
 
     # add to database
     dbModel = InventoryModel(DB_FILENAME)
@@ -47,6 +47,8 @@ def createInventory():
         'code': 200,
         'message': 'success'
     }
+
+# @TODO
 
 
 @router.route("/inventories/<id>")
@@ -58,16 +60,14 @@ def showInventoryByID(id):
 def updateInventory(id):
     # get new form data
     category = request.form.get('category', None)
-    warehouse_id = request.form.get('warehouse_id', None)
-    desc = request.form.get('desc', None)
-    name = request.form.get('name', None)
+    warehouse_id = request.get_json().get('warehouse_id', None)
+    desc = request.get_json().get('desc', None)
+    name = request.get_json().get('name', None)
 
     data = (name, category, desc, warehouse_id)
 
     # check if there is None in the data (since all required in the db Model)
-    if None in (name, category, warehouse_id):
-        print('None in data')
-        abort(500)
+    checkEmptyOrNone(data, lambda: abort(500))
 
     # inserting new data in the database
     dbModel = InventoryModel(DB_FILENAME)

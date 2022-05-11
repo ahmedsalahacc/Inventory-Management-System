@@ -35,7 +35,7 @@ function Navbar() {
         className="navbar"
       >
         <Offcanvas.Header>
-            <Offcanvas.Title className="navbar__title">Manageeto Logistics System</Offcanvas.Title>
+            <Offcanvas.Title className="navbar__title"> <a href="/">Manageeto Logistics System</a></Offcanvas.Title>
 
         </Offcanvas.Header>
         <Offcanvas.Body className="navbar__body">

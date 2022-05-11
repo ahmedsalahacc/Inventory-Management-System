@@ -47,12 +47,12 @@
     z-index: 100;
 }
 
-li a{
+a{
     color: white;
     text-decoration: none;
 }
 
-li a:hover{
+a:hover{
     color: white;
     text-decoration: none;
 }

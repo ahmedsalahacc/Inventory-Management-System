@@ -46,6 +46,7 @@ function Warehouse() {
             </tbody>
         </Table>
         </Row>
+        <br />
         <Row>
           <h4>Enter a New Warehouse</h4>
           <Form onSubmit={(e)=>formSubmitHandler(e, setData)}>

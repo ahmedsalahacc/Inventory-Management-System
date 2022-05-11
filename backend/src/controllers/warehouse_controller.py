@@ -5,6 +5,7 @@ the file contains the routers of the warehouse
 from models.Warehouse import WarehouseModel
 
 from environment.config import config
+from controllers.utils import checkEmptyOrNone
 
 router = Blueprint("warehouse", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
@@ -40,9 +41,7 @@ def createWarehouse():
     print(request.get_json())
 
     # check if there is None in the data (since all required in the db Model) or length < 1
-    if None in data or any([len(i) < 1 for i in data]):
-        print('None in data')
-        abort(500)
+    checkEmptyOrNone(data, lambda: abort(500))
 
     # add to database
     dbModel = WarehouseModel(DB_FILENAME)
@@ -52,6 +51,8 @@ def createWarehouse():
         'code': 200,
         'message': 'success'
     }
+
+# @TODO
 
 
 @router.route("/warehouse/<id>")
