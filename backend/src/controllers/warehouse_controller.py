@@ -1,9 +1,9 @@
-from flask import Blueprint, redirect, request, abort
 '''
 the file contains the routers of the warehouse
 '''
-from models.Warehouse import WarehouseModel
+from flask import Blueprint, redirect, request, abort
 
+from models.Warehouse import WarehouseModel
 from environment.config import config
 from controllers.utils import checkEmptyOrNone
 

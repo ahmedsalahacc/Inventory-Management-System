@@ -1,9 +1,9 @@
-from flask import Blueprint, request, abort
 '''
 This script contains the routers that interface f ff with the inventory model
 '''
-from models.Inventory import InventoryModel
+from flask import Blueprint, request, abort
 
+from models.Inventory import InventoryModel
 from environment.config import config
 from controllers.utils import checkEmptyOrNone
 

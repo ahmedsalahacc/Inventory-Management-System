@@ -10,7 +10,14 @@ function Warehouse() {
   const [data, setData] = useState([])
 
   useEffect(()=>{
-    fetchDataToDisplay(setData)
+    const abortController = new AbortController()
+    const signal = abortController.signal;
+
+    fetchDataToDisplay(setData, signal)
+
+    return ()=>{
+      abortController.abort()
+    }
   }, [])
   return (
     <div>
@@ -77,7 +84,6 @@ function formSubmitHandler(e, callback){
   let target = e.target;
   let name = target.name.value
   let location = target.location.value
-  console.log(name, location)
 
   //post request to add data
   fetch(SERVER+'/warehouse',
@@ -94,13 +100,12 @@ function formSubmitHandler(e, callback){
   })
 }
 
-function fetchDataToDisplay(callback){
+function fetchDataToDisplay(callback, signal=null){
 
-  fetch(SERVER+'/warehouse/all')
+  fetch(SERVER+'/warehouse/all', {signal: signal})
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-    console.log(res)
   })
 }
 
@@ -114,7 +119,7 @@ function deleteDataItem(id, callback){
     method: "DELETE",
     })
   .then(res=>res.json())
-  .then((res)=>{
+  .then((_)=>{
     fetchDataToDisplay(callback)
   })
 }

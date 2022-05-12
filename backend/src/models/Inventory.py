@@ -160,7 +160,7 @@ class InventoryModel(BaseModel):
         sql_script = f'''
         SELECT inventory.id, inventory.name, inventory.category,
             inventory.desc, inventory.warehouse_id,
-            warehouse.name, warehouse.location
+            warehouse.name
         FROM inventory JOIN warehouse
         ON inventory.warehouse_id = warehouse.id
         ORDER BY category {order} 

@@ -129,7 +129,6 @@ class DBinit:
             address NOT NULL,
             shipper_vehicle_id NUMBER NULL,
             created_date TEXT NOT NULL,
-            shipping_time TEXT NULL,
             inventory_id CHARACTER(10) NOT NULL,
             shipment_details_id CHARACTER(10) NOT NULL,
             FOREIGN KEY(inventory_id) REFERENCES inventory(id) ON DELETE CASCADE,
@@ -142,7 +141,8 @@ class DBinit:
             id CHARACTER(10) NOT NULL PRIMARY KEY,
             shipped_from TEXT NOT NULL,
             shipped_to TEXT NOT NULL,
-            expected_shipping_date  TEXT NOT NULL
+            expected_shipping_date  TEXT NOT NULL, 
+            shipping_time TEXT NOT NULL
         );
         '''
 

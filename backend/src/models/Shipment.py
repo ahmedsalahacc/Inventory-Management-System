@@ -12,6 +12,7 @@ class _ShipmentDetailsModel(BaseModel):
         shipped_from TEXT NOT NULL,
         shipped_to TEXT NOT NULL,
         expected_shipping_date  TEXT NOT NULL,
+        shipping_time  TEXT NOT NULL,
     );
     '''
 
@@ -26,7 +27,7 @@ class _ShipmentDetailsModel(BaseModel):
         ----------
         data_tuple: tuple
             tuple of new values in the form of 
-            (id , shipped_from , shipped_to, expected_shipping_date)
+            (shipped_from , shipped_to, expected_shipping_date, shipping_time)
 
         Returns
         -------
@@ -38,7 +39,7 @@ class _ShipmentDetailsModel(BaseModel):
 
         # sql script
         sql_script = '''
-        INSERT INTO shipment_details VALUES (?, ?, ?, ?)
+        INSERT INTO shipment_details VALUES (?, ?, ?, ?, ?)
         '''
 
         # executing script
@@ -93,8 +94,9 @@ class _ShipmentDetailsModel(BaseModel):
         sql_script = '''
         UPDATE shipment_details
         SET shipped_from = ? ,
-            shipped_to = ? 
-            expected_shipping_date = ? 
+            shipped_to = ? ,
+            expected_shipping_date = ? ,
+            shipping_time = ? 
         WHERE id=?
         '''
 
@@ -189,7 +191,6 @@ class ShipmentModel(BaseModel):
         address Text NULL,
         shipper_vehicle_id NUMBER NULL,
         created_date TEXT NOT NULL,
-        shipping_time TEXT NULL,
         inventory CHARACTER(10) NOT NULL,
         shipment_details_id CHARACTER(10) NOT NULL
     );
@@ -208,11 +209,11 @@ class ShipmentModel(BaseModel):
         data_tuple: tuple
             tuple of shipping values in the form of 
             (name, status, shelfIndex, category, address,
-                shipper_vehicle, created_date, shipping_time, 
+                shipper_vehicle, created_date, 
                 inventory_id)
         shipment_details: tuple 
             tuple of shipment details in the form 
-            (shipped_from, shipped_to, expected_shipping_date)
+            (shipped_from, shipped_to, expected_shipping_date, shipping_time)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
@@ -224,13 +225,12 @@ class ShipmentModel(BaseModel):
         # sql script
         sql_script = '''
         INSERT INTO shipment 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
 
         # executing script
         id = gen_id()
-        data_tuple = (gen_id(), *data_tuple, det_id)
-        print("data_tuple", data_tuple)
+        data_tuple = (id, *data_tuple, det_id)
         cursor.execute(sql_script, data_tuple)
         self.conn.commit()
 
@@ -269,10 +269,14 @@ class ShipmentModel(BaseModel):
 
         Parameters
         ----------
-        id: str
-            id of the record in the db
-        new_data: tuple
-            tuple of new values (category, warehouse_id)
+        data_tuple: tuple
+            tuple of shipping values in the form of 
+            (name, status, shelfIndex, category, address,
+                shipper_vehicle, created_date, 
+                inventory_id)
+        shipment_details: tuple 
+            tuple of shipment details in the form 
+            (shipped_from, shipped_to, expected_shipping_date, shipping_time)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
@@ -301,7 +305,6 @@ class ShipmentModel(BaseModel):
             address = ?,
             shipper_vehicle_id = ?,
             created_date = ?,
-            shipping_time = ?,
             inventory_id = ?,
             shipment_details_id = ?
         WHERE id=?
@@ -377,15 +380,19 @@ class ShipmentModel(BaseModel):
             shipment.address,
             shipment.shipper_vehicle_id,
             shipment.created_date,
-            shipment.shipping_time,
-            inventory.name,
+            shipment_details.shipping_time,
+            shipment_details.expected_shipping_date,
             shipment_details.shipped_from,
-            shipment_details.shipped_to
+            shipment_details.shipped_to,
+            inventory.name,
+            warehouse.name
         FROM shipment JOIN shipment_details
         ON shipment.shipment_details_id = shipment_details.id
         JOIN inventory
         ON shipment.inventory_id = inventory.id
-        ORDER BY created_date {order} 
+        JOIN warehouse
+        ON inventory.warehouse_id = warehouse.id
+        ORDER BY shipment.created_date {order} 
         '''
 
         # executing script

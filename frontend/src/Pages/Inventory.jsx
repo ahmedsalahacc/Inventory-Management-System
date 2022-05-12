@@ -1,14 +1,23 @@
 import React, {useState, useEffect} from 'react'
 
-import {Container, Row, Table, Button, Form} from  'react-bootstrap'
+import {Container, Row, Table, Button, Form, Col, Dropdown} from  'react-bootstrap'
 
 import {SERVER} from '../constants'
 
 function Inventory() {
   const [data, setData] = useState([])
+  const [warehouses, setWarehouses] = useState([])
 
   useEffect(()=>{
-    fetchDataToDisplay(setData)
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    fetchDataToDisplay(setData, signal);
+    fetchAvailableWarehouses(setWarehouses, signal)
+
+    return ()=>{
+      abortController.abort()
+    }
   }, [])
   return (
     <div>
@@ -23,7 +32,7 @@ function Inventory() {
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Warehouse ID</th>
+                <th>Warehouse</th>
                 <th>Desc</th>
                 <th>Category</th>
                 <th>Operations</th>
@@ -35,7 +44,7 @@ function Inventory() {
                   return (<tr>
                 <td>{val[0]}</td>
                 <td>{val[1]}</td>
-                <td>{val[4]}</td>
+                <td>{val[5]}</td>
                 <td>{val[3]}</td>
                 <td>{val[2]}</td>
                 <td >
@@ -52,16 +61,29 @@ function Inventory() {
         <Row>
           <h4>Enter a New Inventory</h4>
           <Form onSubmit={(e)=>formSubmitHandler(e, setData)}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Invenotry Name</Form.Label>
-              <Form.Control required name="name" type="text" placeholder="Inventory Name" />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Warehouse ID</Form.Label>
-              <Form.Control required name="warehouse_id" type="text" placeholder="Warehouse ID"/>
-            </Form.Group>
-
+            <Row>
+              <Col>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Label>Inventory Name</Form.Label>
+                  <Form.Control required name="name" type="text" placeholder="Inventory Name" />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <Form.Label>Select a Warehouse</Form.Label>
+                  <Form.Select name="warehouse_id" aria-label="Default select example">
+                    <option value='unspecified'>select a warehouse...</option>
+                    {
+                      warehouses.map((value)=>{
+                        return (
+                          <option value={value[0]}>{value[1]}</option>
+                        )
+                      })
+                    }
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Description</Form.Label>
               <Form.Control required name="desc" type="text" placeholder="Description"/>
@@ -90,7 +112,11 @@ function formSubmitHandler(e, callback){
   let warehouseId = target.warehouse_id.value
   let desc = target.desc.value
   let category = target.category.value
-  console.log(name, warehouseId,desc,category)
+  
+  if (warehouseId === 'unspecified'){
+    alert("Please select a warehouse")
+    return
+  }
 
   //post request to add data
   fetch(SERVER+'/inventory',
@@ -112,13 +138,12 @@ function formSubmitHandler(e, callback){
   })
 }
 
-function fetchDataToDisplay(callback){
+function fetchDataToDisplay(callback, signal=null){
 
-  fetch(SERVER+'/inventory/all')
+  fetch(SERVER+'/inventory/all', {signal:signal})
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-    console.log(res)
   })
 }
 
@@ -138,7 +163,11 @@ function deleteDataItem(id, callback){
 }
 
 //@TODO for the dropdown of the warehouses
-function getAvailableInventories(){
-
+function fetchAvailableWarehouses(callback, signal=null){
+  fetch(SERVER+'/warehouse/all', {signal:signal})
+  .then(res=>res.json())
+  .then((res)=>{
+    callback(res.message)
+  })
 }
 export default Inventory

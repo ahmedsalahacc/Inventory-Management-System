@@ -1,10 +1,9 @@
-from audioop import add
-from flask import Blueprint, request, abort
 '''
 the file contains the routers the shipment
 '''
-from models.Shipment import ShipmentModel
+from flask import Blueprint, request, abort
 
+from models.Shipment import ShipmentModel
 from environment.config import config
 from controllers.utils import checkEmptyOrNone
 
@@ -13,7 +12,7 @@ router = Blueprint("shipment", __name__)
 ##---- Routes
 
 
-@router.route("/shipments")
+@router.route("/shipment/all")
 def showAllShipments():
     # @TODO try catch
 
@@ -29,39 +28,38 @@ def showAllShipments():
 # @TODO
 
 
-@router.route("/shipments/<id>")
+@router.route("/shipment/<id>")
 def showShipmentByID(id):
     return"shipment"
 
 
-@router.route("/shipments", methods=['POST'])
+@router.route("/shipment", methods=['POST'])
 def createShipment():
 
     # get form data
     name = request.get_json().get('name')
-    status = request.get_json().get('status')
     shelfIndex = request.get_json().get('shelfIndex')
     category = request.get_json().get('category')
-    address = request.get_json().get('address')
+    status = request.get_json().get('status')
     shipperVehicle = request.get_json().get('shipperVehicle')
-    createdDate = 'date'
-    shippingTime = request.get_json().get('shippingTime')
-    inventory = request.get_json().get('inventory')
     shipped_from = request.get_json().get('shippedFrom')
     shipped_to = request.get_json().get('shippedTo')
     expected_shipping_date = request.get_json().get('shippingDate')
+    shippingTime = request.get_json().get('shippingTime')
+    createdDate = 'date'
+    address = request.get_json().get('address')
+    inventory = request.get_json().get('inventory')
 
     # make data tuples
     data = (name, status, shelfIndex, category, address,
-            shipperVehicle, createdDate, shippingTime, inventory)
-    details = (shipped_from, shipped_to, expected_shipping_date)
+            shipperVehicle, createdDate, inventory)
+    details = (shipped_from, shipped_to, expected_shipping_date, shippingTime)
 
     # check if there is None in the data (since all required in the db Model) or length < 1
-    # check if there is None in the data (since all required in the db Model) or length < 1
-    checkEmptyOrNone(data, lambda: abort(500))
+    # checkEmptyOrNone(data, lambda: abort(500))
 
     # check if there is None in the data (since all required in the db Model) or length < 1
-    checkEmptyOrNone(details, lambda: abort(500))
+    # checkEmptyOrNone(details, lambda: abort(500))
 
     # add to db
     dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
@@ -73,7 +71,7 @@ def createShipment():
     }
 
 
-@router.route("/shipments/<id>", methods=['PUT'])
+@router.route("/shipment/<id>", methods=['PUT'])
 def updateShipment(id):
     # get form data
     name = request.form.get('name')
@@ -91,11 +89,11 @@ def updateShipment(id):
 
     # make data tuples
     data_tuple = (name, status, shelfIndex, category, address,
-                  shipperVehicle, createdDate, shippingTime, inventory)
+                  shipperVehicle, createdDate, inventory)
     details = (shipped_from, shipped_to, expected_shipping_date)
 
-    checkEmptyOrNone(data_tuple, lambda: abort(500))
-    checkEmptyOrNone(details, lambda: abort(500))
+    # checkEmptyOrNone(data_tuple, lambda: abort(500))
+    # checkEmptyOrNone(details, lambda: abort(500))
 
     # add to db
     dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
@@ -107,7 +105,7 @@ def updateShipment(id):
     }
 
 
-@router.route("/shipments/<id>", methods=['DELETE'])
+@router.route("/shipment/<id>", methods=['DELETE'])
 def deleteShipment(id):
     dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
     dbModel.delete(id)
