@@ -23,7 +23,9 @@ function Inventory() {
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Location</th>
+                <th>Warehouse ID</th>
+                <th>Desc</th>
+                <th>Category</th>
                 <th>Operations</th>
               </tr>
             </thead>
@@ -31,9 +33,11 @@ function Inventory() {
               {
                 data.map((val, idx)=>{
                   return (<tr>
-                <td key={idx}>{val[0]}</td>
-                <td key={idx+100}>{val[1]}</td>
-                <td key={idx+200}>{val[2]}</td>
+                <td>{val[0]}</td>
+                <td>{val[1]}</td>
+                <td>{val[4]}</td>
+                <td>{val[3]}</td>
+                <td>{val[2]}</td>
                 <td >
                   <Button className='table__btn' size='sm' variant="info">Edit</Button> 
                   <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>
@@ -49,13 +53,22 @@ function Inventory() {
           <h4>Enter a New Inventory</h4>
           <Form onSubmit={(e)=>formSubmitHandler(e, setData)}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Warehouse Name</Form.Label>
-              <Form.Control required name="name" type="text" placeholder="Warehouse Name" />
+              <Form.Label>Invenotry Name</Form.Label>
+              <Form.Control required name="name" type="text" placeholder="Inventory Name" />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Location</Form.Label>
-              <Form.Control required name="location" type="text" placeholder="Location"/>
+              <Form.Label>Warehouse ID</Form.Label>
+              <Form.Control required name="warehouse_id" type="text" placeholder="Warehouse ID"/>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>Description</Form.Label>
+              <Form.Control required name="desc" type="text" placeholder="Description"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <Form.Label>Category</Form.Label>
+              <Form.Control required name="category" type="text" placeholder="Category"/>
             </Form.Group>
             <Button variant="primary"  type="submit">
               Add
@@ -74,18 +87,25 @@ function formSubmitHandler(e, callback){
   // extract data
   let target = e.target;
   let name = target.name.value
-  let location = target.location.value
-  console.log(name, location)
+  let warehouseId = target.warehouse_id.value
+  let desc = target.desc.value
+  let category = target.category.value
+  console.log(name, warehouseId,desc,category)
 
   //post request to add data
-  fetch(SERVER+'/warehouse',
+  fetch(SERVER+'/inventory',
     {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     method: "POST",
-    body: JSON.stringify({'name': name, 'location': location})
+    body: JSON.stringify({
+      'name': name,
+      'warehouse_id': warehouseId,
+      'desc':desc,
+      'category': category
+    })
     }
   ).then(_=>{
     fetchDataToDisplay(callback)
@@ -94,7 +114,7 @@ function formSubmitHandler(e, callback){
 
 function fetchDataToDisplay(callback){
 
-  fetch(SERVER+'/warehouse/all')
+  fetch(SERVER+'/inventory/all')
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
@@ -103,7 +123,7 @@ function fetchDataToDisplay(callback){
 }
 
 function deleteDataItem(id, callback){
-  fetch(SERVER+'/warehouse/'+id.toString(),
+  fetch(SERVER+'/inventory/'+id.toString(),
   {
     headers: {
       'Accept': 'application/json',
@@ -112,9 +132,13 @@ function deleteDataItem(id, callback){
     method: "DELETE",
     })
   .then(res=>res.json())
-  .then((res)=>{
+  .then((_)=>{
     fetchDataToDisplay(callback)
   })
 }
 
+//@TODO for the dropdown of the warehouses
+function getAvailableInventories(){
+
+}
 export default Inventory

@@ -14,7 +14,7 @@ DB_FILENAME = config['DB']['DB_FILEPATH']
 ##---- Routes
 
 
-@router.route("/inventories")
+@router.route("/inventory/all")
 def showAllInventories():
     # @TODO try catch
     dbModel = InventoryModel(DB_FILENAME)
@@ -26,7 +26,7 @@ def showAllInventories():
     }
 
 
-@router.route("/inventories", methods=['POST'])
+@router.route("/inventory", methods=['POST'])
 def createInventory():
     # get the form data
     category = request.get_json().get('category', None)
@@ -51,12 +51,12 @@ def createInventory():
 # @TODO
 
 
-@router.route("/inventories/<id>")
+@router.route("/inventory/<id>")
 def showInventoryByID(id):
     return "Inventory"
 
 
-@router.route("/inventories/<id>", methods=['PUT'])
+@router.route("/inventory/<id>", methods=['PUT'])
 def updateInventory(id):
     # get new form data
     category = request.form.get('category', None)
@@ -79,7 +79,7 @@ def updateInventory(id):
     }
 
 
-@router.route("/inventories/<id>", methods=['DELETE'])
+@router.route("/inventory/<id>", methods=['DELETE'])
 def deleteInventory(id):
 
     dbModel = InventoryModel(DB_FILENAME)
