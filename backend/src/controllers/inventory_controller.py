@@ -11,7 +11,7 @@ from controllers.utils import parseMsg, STATUS_CODE
 router = Blueprint("inventory", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
 # sets has O(1) search time as it uses hashing to access its values
-REQUIRED_KEYS_SET = {'name', 'desc', 'warehouse_id'}
+REQUIRED_KEYS_SET = ('name', 'category', 'desc', 'warehouse_id')
 
 
 ##---- Routes ----##
@@ -26,7 +26,7 @@ def showAllInventories():
             'message': queries
         }
     except:
-        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/inventory", methods=['POST'])
@@ -42,11 +42,13 @@ def createInventory():
                 msg = f'{key} has a value of None or has an empty string'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
+            data.append(value)
+
         data = tuple(data)
 
         # add to database
         dbModel = InventoryModel(DB_FILENAME)
-        dbModel.insert(data)
+        print(dbModel.insert(data), data)
 
         return {
             'code': STATUS_CODE.SUCCESS,
@@ -77,6 +79,8 @@ def updateInventory(id):
                 msg = f'{key} has a value of None or has an empty string'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
+            data.append(value)
+
         data = tuple(data)
 
         # inserting new data in the database
@@ -89,7 +93,6 @@ def updateInventory(id):
         }
     except:
         abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
-
 
 
 @router.route("/inventory/<id>", methods=['DELETE'])

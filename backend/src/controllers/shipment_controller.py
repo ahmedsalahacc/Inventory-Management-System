@@ -10,13 +10,13 @@ from controllers.utils import parseMsg, STATUS_CODE
 
 ##---- Globals and Constants ----##
 router = Blueprint("shipment", __name__)
+DATA_KEYS_SET = ('name', 'status', 'shelfIndex',
+                 'category', 'address', 'shipperVehicle',
+                 'date', 'inventory', )
+
+DETAILS_KEYS_SET = ('shippedFrom', 'shippedTo', 'shippingDate', 'shippingTime')
+
 # sets has O(1) search time as it uses hashing to access its values
-DATA_KEYS_SET = {'name', 'shelfIndex', 'category',
-                 'status', 'shipperVehicle',
-                 'address', 'inventory', 'date'}
-
-DETAILS_KEYS_SET = {'shippedFrom', 'shippedTo', 'shippingDate', 'shippingTime'}
-
 REQUIRED_KEYS_SET = {'name', 'shelfIndex',
                      'category', 'status',
                      'shippedFrom', 'shippedTo',
@@ -55,7 +55,7 @@ def createShipment():
         data = []
         details = []
 
-        crt_date = datetime.today()
+        crt_date = datetime.today().strftime('%Y-%m-%d')
 
         for key in DATA_KEYS_SET:
             value = parseMsg(request.get_json().get(key, None))
@@ -79,7 +79,9 @@ def createShipment():
                     abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
             # check if the shippingDate less than the current date
-            if key == 'shippingDate' and datetime.strptime(value, '%Y-%m-%d') < crt_date:
+            if key == 'shippingDate' and \
+                    datetime.strptime(value, '%Y-%m-%d') < \
+                    datetime.strptime(crt_date, '%Y-%m-%d'):
                 msg = 'Shipment date must be NO earlier than the current date'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
@@ -97,8 +99,7 @@ def createShipment():
             'message': 'success'
         }
     except:
-        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
-
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/shipment/<id>", methods=['PUT'])
@@ -107,7 +108,7 @@ def updateShipment(id):
         data = []
         details = []
 
-        crt_date = datetime.today()
+        crt_date = datetime.today().strftime('%Y-%m-%d')
 
         for key in DATA_KEYS_SET:
             value = parseMsg(request.get_json().get(key, None))
@@ -131,7 +132,9 @@ def updateShipment(id):
                     abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
             # check if the shippingDate less than the current date
-            if key == 'shippingDate' and datetime.strptime(value, '%Y-%m-%d') < crt_date:
+            if key == 'shippingDate' and \
+                    datetime.strptime(value, '%Y-%m-%d') < \
+                    datetime.strptime(crt_date, '%Y-%m-%d'):
                 msg = 'Shipment date must be NO earlier than the current date'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
@@ -149,7 +152,7 @@ def updateShipment(id):
             'message': 'success'
         }
     except:
-        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/shipment/<id>", methods=['DELETE'])

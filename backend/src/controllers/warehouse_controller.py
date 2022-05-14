@@ -10,7 +10,7 @@ from controllers.utils import parseMsg, STATUS_CODE
 ##---- Globals and Constants ----##
 router = Blueprint("warehouse", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
-REQUIRED_KEYS_SET = {'name', 'location'}
+REQUIRED_KEYS_SET = ('name', 'location')
 
 ##---- Routes ----##
 
@@ -49,6 +49,8 @@ def createWarehouse():
                 msg = f'{key} has a value of None or has an empty string'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
+            data.append(value)
+
         data = tuple(data)
 
         # add to database
@@ -83,6 +85,8 @@ def updateWarehouse(id):
             if value == None or len(value) == 0:
                 msg = f'{key} has a value of None or has an empty string'
                 abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
+
+            data.append(value)
 
         data = tuple(data)
 
