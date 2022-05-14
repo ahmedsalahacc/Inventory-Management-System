@@ -59,7 +59,7 @@ function Shipment() {
                 <td>{val[5]}</td>
                 <td>{val[6]}</td>
                 <td>{val[7]}</td>
-                <td>{val[7]}</td>
+                <td>{val[9]}</td>
                 <td>{val[8]}</td>
                 <td>{val[10]}</td>
                 <td>{val[11]}</td>
@@ -83,7 +83,7 @@ function Shipment() {
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Shipment's Name*</Form.Label>
-                  <Form.Control required name="name" type="text" placeholder="Shipment's Name" />
+                  <Form.Control name="name" type="text" placeholder="Shipment's Name" />
                 </Form.Group>
               </Col>
               <Col>

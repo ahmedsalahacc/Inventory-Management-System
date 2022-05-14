@@ -5,54 +5,65 @@ from flask import Blueprint, redirect, request, abort
 
 from models.Warehouse import WarehouseModel
 from environment.config import config
-from controllers.utils import checkEmptyOrNone
+from controllers.utils import parseMsg, STATUS_CODE
 
+##---- Globals and Constants ----##
 router = Blueprint("warehouse", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
+REQUIRED_KEYS_SET = {'name', 'location'}
 
-##---- Routes
+##---- Routes ----##
 
 
 @router.route('/')
 def home():
-    return redirect('/warehouses')
+    return "Welcome to Manageeto"
 
 
 @router.route("/warehouse/all")
 def showAllWarehouses():
 
-    # @TODO try catch
-    dbModel = WarehouseModel(config['DB']['DB_FILEPATH'])
+    try:
 
-    queries = dbModel.getAll()
+        dbModel = WarehouseModel(config['DB']['DB_FILEPATH'])
 
-    return {
-        'code': 200,
-        'message': queries
-    }
+        queries = dbModel.getAll()
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': queries
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/warehouse", methods=['POST'])
 def createWarehouse():
-    # get the form data
-    name = request.get_json().get('name', None)
-    location = request.get_json().get('location', None)
-    data = (name, location)
-    print(request.get_json())
+    try:
+        data = []
 
-    # check if there is None in the data (since all required in the db Model) or length < 1
-    checkEmptyOrNone(data, lambda: abort(500))
+        for key in REQUIRED_KEYS_SET:
+            value = request.get_json().get(key, None)
 
-    # add to database
-    dbModel = WarehouseModel(DB_FILENAME)
-    dbModel.insert(data)
+            if value == None or len(value) == 0:
+                msg = f'{key} has a value of None or has an empty string'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        data = tuple(data)
+
+        # add to database
+        dbModel = WarehouseModel(DB_FILENAME)
+        dbModel.insert(data)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 # @TODO
+# DEPRECATED
 
 
 @router.route("/warehouse/<id>")
@@ -63,33 +74,39 @@ def showWareHouseByID(id):
 
 @router.route("/warehouse/<id>", methods=['PUT'])
 def updateWarehouse(id):
-    # get the form data
-    name = request.form.get('name', None)
-    location = request.form.get('location', None)
-    data = (name, location)
+    try:
+        data = []
 
-    # check if there is None in the data (since all required in the db Model)
-    if None in data:
-        print('None in data')
-        abort(500)
+        for key in REQUIRED_KEYS_SET:
+            value = request.get_json().get(key, None)
 
-    # add to database
-    dbModel = WarehouseModel(DB_FILENAME)
-    dbModel.update(id, data)
+            if value == None or len(value) == 0:
+                msg = f'{key} has a value of None or has an empty string'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        data = tuple(data)
+
+        # add to database
+        dbModel = WarehouseModel(DB_FILENAME)
+        dbModel.update(id, data)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/warehouse/<id>", methods=['DELETE'])
 def deleteWareHouse(id):
+    try:
+        dbModel = WarehouseModel(DB_FILENAME)
+        dbModel.delete(id)
 
-    dbModel = WarehouseModel(DB_FILENAME)
-    dbModel.delete(id)
-
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)

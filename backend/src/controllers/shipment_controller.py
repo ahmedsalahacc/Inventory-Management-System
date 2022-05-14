@@ -1,29 +1,45 @@
 '''
 the file contains the routers the shipment
 '''
+from datetime import datetime
 from flask import Blueprint, request, abort
 
 from models.Shipment import ShipmentModel
 from environment.config import config
-from controllers.utils import checkEmptyOrNone
+from controllers.utils import parseMsg, STATUS_CODE
 
+##---- Globals and Constants ----##
 router = Blueprint("shipment", __name__)
+# sets has O(1) search time as it uses hashing to access its values
+DATA_KEYS_SET = {'name', 'shelfIndex', 'category',
+                 'status', 'shipperVehicle',
+                 'address', 'inventory', 'date'}
 
-##---- Routes
+DETAILS_KEYS_SET = {'shippedFrom', 'shippedTo', 'shippingDate', 'shippingTime'}
+
+REQUIRED_KEYS_SET = {'name', 'shelfIndex',
+                     'category', 'status',
+                     'shippedFrom', 'shippedTo',
+                     'shippingDate', 'address',
+                     'inventory'}
+
+##---- Routes ----##
 
 
 @router.route("/shipment/all")
 def showAllShipments():
-    # @TODO try catch
+    try:
+        dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
 
-    dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
+        queries = dbModel.getAll()
 
-    queries = dbModel.getAll()
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': queries
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
-    return {
-        'code': 200,
-        'message': queries
-    }
 
 # @TODO
 
@@ -35,82 +51,116 @@ def showShipmentByID(id):
 
 @router.route("/shipment", methods=['POST'])
 def createShipment():
+    try:
+        data = []
+        details = []
 
-    # get form data
-    name = request.get_json().get('name')
-    shelfIndex = request.get_json().get('shelfIndex')
-    category = request.get_json().get('category')
-    status = request.get_json().get('status')
-    shipperVehicle = request.get_json().get('shipperVehicle')
-    shipped_from = request.get_json().get('shippedFrom')
-    shipped_to = request.get_json().get('shippedTo')
-    expected_shipping_date = request.get_json().get('shippingDate')
-    shippingTime = request.get_json().get('shippingTime')
-    createdDate = 'date'
-    address = request.get_json().get('address')
-    inventory = request.get_json().get('inventory')
+        crt_date = datetime.today()
 
-    # make data tuples
-    data = (name, status, shelfIndex, category, address,
-            shipperVehicle, createdDate, inventory)
-    details = (shipped_from, shipped_to, expected_shipping_date, shippingTime)
+        for key in DATA_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
 
-    # check if there is None in the data (since all required in the db Model) or length < 1
-    # checkEmptyOrNone(data, lambda: abort(500))
+            if key in REQUIRED_KEYS_SET:
+                if value == None or len(value) == 0:
+                    msg = f'{key} has a value of None or has an empty string'
+                    abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    # check if there is None in the data (since all required in the db Model) or length < 1
-    # checkEmptyOrNone(details, lambda: abort(500))
+            if key == 'date':
+                value = crt_date
 
-    # add to db
-    dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
-    dbModel.insert(data, details)
+            data.append(value)
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        for key in DETAILS_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
+
+            if key in REQUIRED_KEYS_SET:
+                if value == None or len(value) == 0:
+                    msg = f'{key} has a value of None or has an empty string'
+                    abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
+
+            # check if the shippingDate less than the current date
+            if key == 'shippingDate' and datetime.strptime(value, '%Y-%m-%d') < crt_date:
+                msg = 'Shipment date must be NO earlier than the current date'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
+
+            details.append(value)
+
+        data = tuple(data)
+        details = tuple(details)
+
+        # add to db
+        dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
+        dbModel.insert(data, details)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
+
 
 
 @router.route("/shipment/<id>", methods=['PUT'])
 def updateShipment(id):
-    # get form data
-    name = request.form.get('name')
-    status = request.form.get('status')
-    shelfIndex = request.form.get('shelfIndex')
-    category = request.form.get('category')
-    address = request.form.get('address')
-    shipperVehicle = request.form.get('shipperVehicle')
-    createdDate = 'date'
-    shippingTime = request.form.get('shippingTime')
-    inventory = request.form.get('inventory')
-    shipped_from = request.form.get('shippedFrom')
-    shipped_to = request.form.get('shippedTo')
-    expected_shipping_date = request.form.get('shippingDate')
+    try:
+        data = []
+        details = []
 
-    # make data tuples
-    data_tuple = (name, status, shelfIndex, category, address,
-                  shipperVehicle, createdDate, inventory)
-    details = (shipped_from, shipped_to, expected_shipping_date)
+        crt_date = datetime.today()
 
-    # checkEmptyOrNone(data_tuple, lambda: abort(500))
-    # checkEmptyOrNone(details, lambda: abort(500))
+        for key in DATA_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
 
-    # add to db
-    dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
-    dbModel.update(id, data_tuple, details)
+            if key in REQUIRED_KEYS_SET:
+                if value == None or len(value) == 0:
+                    msg = f'{key} has a value of None or has an empty string'
+                    abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+            if key == 'date':
+                value = crt_date
+
+            data.append(value)
+
+        for key in DETAILS_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
+
+            if key in REQUIRED_KEYS_SET:
+                if value == None or len(value) == 0:
+                    msg = f'{key} has a value of None or has an empty string'
+                    abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
+
+            # check if the shippingDate less than the current date
+            if key == 'shippingDate' and datetime.strptime(value, '%Y-%m-%d') < crt_date:
+                msg = 'Shipment date must be NO earlier than the current date'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
+
+            details.append(value)
+
+        data = tuple(data)
+        details = tuple(details)
+
+        # add to db
+        dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
+        dbModel.update(id, data, details)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
 
 
 @router.route("/shipment/<id>", methods=['DELETE'])
 def deleteShipment(id):
-    dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
-    dbModel.delete(id)
+    try:
+        dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
+        dbModel.delete(id)
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)

@@ -1,12 +1,20 @@
-def checkEmptyOrNone(data: iter, handler: callable):
+class STATUS_CODE:
+    BAD_REQUEST = 400
+    SUCCESS = 200
+    NOT_FOUND = 404
+    INTERNAL_SERVER_ERROR = 500
+
+
+def parseMsg(msg):
     '''
-    checks if there is None/Null in data or if there is an empty value
+    performs rstrip and lstrip on the string
 
     Parameters:
     -----------
-    data: iter - data tuple
-    handler: function - handler function (flask abort)
+    msg: str - input message
+
+    Returns:
+    --------
+    parsed_msg: str - the parsed message
     '''
-    if None in data or any([len(i.replace(' ', '')) < 1 for i in data]):
-        print('None in data')
-        handler()
+    return msg.rstrip().lstrip() if msg is not None else None

@@ -1,7 +1,4 @@
 .hamburger__btn{
-    position: sticky;
-    top:0;
-    z-index: 10;
     background-color: rgba(37,34,34,0.1) !important;
     border: 0;
     font-size: 2rem;
@@ -25,7 +22,9 @@
 
 .__hamburger__div__component{
     display: flex;
-    z-index: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .navbar__title{

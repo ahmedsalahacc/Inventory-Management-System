@@ -5,48 +5,56 @@ from flask import Blueprint, request, abort
 
 from models.Inventory import InventoryModel
 from environment.config import config
-from controllers.utils import checkEmptyOrNone
+from controllers.utils import parseMsg, STATUS_CODE
 
-
+##---- Globals and Constants ----##
 router = Blueprint("inventory", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
+# sets has O(1) search time as it uses hashing to access its values
+REQUIRED_KEYS_SET = {'name', 'desc', 'warehouse_id'}
 
-##---- Routes
 
-
+##---- Routes ----##
 @router.route("/inventory/all")
 def showAllInventories():
-    # @TODO try catch
-    dbModel = InventoryModel(DB_FILENAME)
-    queries = dbModel.getAll()
+    try:
+        dbModel = InventoryModel(DB_FILENAME)
+        queries = dbModel.getAll()
 
-    return {
-        'code': 200,
-        'message': queries
-    }
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': queries
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR) 
 
 
 @router.route("/inventory", methods=['POST'])
 def createInventory():
-    # get the form data
-    category = request.get_json().get('category', None)
-    warehouse_id = request.get_json().get('warehouse_id', None)
-    desc = request.get_json().get('desc', None)
-    name = request.get_json().get('name', None)
+    try:
+        data = []
 
-    data = (name, category, desc, warehouse_id)
+        for key in REQUIRED_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
 
-    # check if there is None in the data (since all required in the db Model) or length < 1
-    checkEmptyOrNone(data, lambda: abort(500))
+            # check if the value is empty or None
+            if value == None or len(value) == 0:
+                msg = f'{key} has a value of None or has an empty string'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    # add to database
-    dbModel = InventoryModel(DB_FILENAME)
-    dbModel.insert(data)
+        data = tuple(data)
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        # add to database
+        dbModel = InventoryModel(DB_FILENAME)
+        dbModel.insert(data)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
+
 
 # @TODO
 
@@ -58,34 +66,41 @@ def showInventoryByID(id):
 
 @router.route("/inventory/<id>", methods=['PUT'])
 def updateInventory(id):
-    # get new form data
-    category = request.form.get('category', None)
-    warehouse_id = request.get_json().get('warehouse_id', None)
-    desc = request.get_json().get('desc', None)
-    name = request.get_json().get('name', None)
+    try:
+        data = []
 
-    data = (name, category, desc, warehouse_id)
+        for key in REQUIRED_KEYS_SET:
+            value = parseMsg(request.get_json().get(key, None))
 
-    # check if there is None in the data (since all required in the db Model)
-    checkEmptyOrNone(data, lambda: abort(500))
+            # check if the value is empty or None
+            if value == None or len(value) == 0:
+                msg = f'{key} has a value of None or has an empty string'
+                abort(STATUS_CODE.BAD_REQUEST, {'message': msg})
 
-    # inserting new data in the database
-    dbModel = InventoryModel(DB_FILENAME)
-    dbModel.update(id, data)
+        data = tuple(data)
 
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        # inserting new data in the database
+        dbModel = InventoryModel(DB_FILENAME)
+        dbModel.update(id, data)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
+
 
 
 @router.route("/inventory/<id>", methods=['DELETE'])
 def deleteInventory(id):
+    try:
+        dbModel = InventoryModel(DB_FILENAME)
+        dbModel.delete(id)
 
-    dbModel = InventoryModel(DB_FILENAME)
-    dbModel.delete(id)
-
-    return {
-        'code': 200,
-        'message': 'success'
-    }
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': 'success'
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
