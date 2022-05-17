@@ -1,12 +1,30 @@
-import React from 'react'
-import {useParams} from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import {useParams,} from 'react-router-dom'
 
 import { SERVER } from '../constants'
 
-import {Container, Row, Button, Form} from 'react-bootstrap'
+import {Container, Row, Form, Button} from 'react-bootstrap'
 
 function EditWarehouse() {
   const {id} = useParams()
+
+  // default data state
+  const [content, setContent] = useState([])
+
+  // get default data
+  useEffect(()=>{
+    const abortController = new AbortController();
+    const signal = abortController.signal
+
+    fetchById(id, setContent, signal)
+
+     return ()=>{
+       // abort to clean up
+       abortController.abort()
+     }
+  }, [])
+
+
   return (
     <div>
       <Container className="container__style">
@@ -15,16 +33,17 @@ function EditWarehouse() {
           <Form onSubmit={(e)=>formSubmitHandler(e, id)}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Warehouse Name</Form.Label>
-              <Form.Control required name="name" type="text" placeholder="Warehouse Name" />
+              <Form.Control required name="name" type="text" placeholder="Warehouse Name" defaultValue={content[1]} />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Location</Form.Label>
-              <Form.Control required name="location" type="text" placeholder="Location"/>
+              <Form.Control required defaultValue={content[2]} name="location" type="text" placeholder="Location"/>
             </Form.Group>
-            <a className="btn btn-primary" href="/warehouses" variant="primary"  type="submit">
-              Add
-            </a>
+            <Button variant="primary"  type="submit">
+              Submit
+            </Button>
+
           </Form>
         </Row>
       </Container>
@@ -51,7 +70,18 @@ function formSubmitHandler(e, id){
     body: JSON.stringify({'name': name, 'location': location})
     }
   )
+
+  window.location.href = '/warehouses'
 }
 
-//@TODO fetchById function
+async function fetchById(id, callback, signal=null){
+const URI = '/warehouse/'+id
+  const URL = SERVER+URI
+
+  await fetch(URL, {signal:signal})
+  .then(res=>res.json())
+  .then(res=>{
+    callback(res.message)
+  })
+}
 export default EditWarehouse

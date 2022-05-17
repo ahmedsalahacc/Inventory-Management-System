@@ -71,7 +71,11 @@ def createWarehouse():
 @router.route("/warehouse/<id>")
 def showWareHouseByID(id):
     dbModel = WarehouseModel(DB_FILENAME)
-    return "Warehouse"
+    data = dbModel.getByID(id)
+    return {
+        'code': STATUS_CODE.SUCCESS,
+        'message':data
+    }
 
 
 @router.route("/warehouse/<id>", methods=['PUT'])

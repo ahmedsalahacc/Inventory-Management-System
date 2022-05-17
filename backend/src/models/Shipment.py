@@ -1,7 +1,5 @@
 from models import BaseModel, gen_id
 
-# @TODO shipment model and shipment_details model
-
 
 class _ShipmentDetailsModel(BaseModel):
     '''

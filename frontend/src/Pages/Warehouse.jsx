@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import {Col, Row, Container, Table, Form, Button} from 'react-bootstrap'
+import {Row, Container, Table, Form, Button} from 'react-bootstrap'
 
 import './styles/warehouse.css'
 
