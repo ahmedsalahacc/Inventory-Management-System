@@ -44,7 +44,7 @@ function Warehouse() {
                 <td key={idx+100}>{val[1]}</td>
                 <td key={idx+200}>{val[2]}</td>
                 <td >
-                  <Button className='table__btn' size='sm' variant="info">Edit</Button> 
+                  <a className='table__btn btn btn-sm btn-info' href={"/edit/warehouse/"+val[0]}>Edit</a> 
                   <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>
                 </td>
               </tr>);

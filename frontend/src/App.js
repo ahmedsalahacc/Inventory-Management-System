@@ -8,6 +8,7 @@ import Navbar from "./Components/Navbar";
 import Inventory from "./Pages/Inventory";
 import Shipment from "./Pages/Shipment";
 import Home from "./Pages/Home";
+import EditWarehouse from "./Pages/EditWarehouse";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route exact path="/warehouses" element={<Warehouse />} />
           <Route exact path="/inventories" element={<Inventory />} />
           <Route exact path="/shipments" element={<Shipment />} />
+          <Route exact path="/edit/warehouse/:id" element={<EditWarehouse />} />
         </Routes>
       </BrowserRouter>
     </div>

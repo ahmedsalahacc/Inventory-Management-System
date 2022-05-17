@@ -1,18 +1,18 @@
 import React, {useState, useEffect} from 'react'
 
-import {Container, Row, Table, Button, Form, Col, Dropdown} from  'react-bootstrap'
+import { SERVER } from '../constants'
 
-import {SERVER} from '../constants'
+import { Container, Row, Button, Form, Col } from 'react-bootstrap'
 
-function Inventory() {
-  const [data, setData] = useState([])
+function EditInventory() {
+
   const [warehouses, setWarehouses] = useState([])
 
   useEffect(()=>{
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    fetchDataToDisplay(setData, signal);
+    // fetchDataToDisplay(setData, signal);
     fetchAvailableWarehouses(setWarehouses, signal)
 
     return ()=>{
@@ -20,47 +20,10 @@ function Inventory() {
     }
   }, [])
   return (
-    <div>
-      <Container className="container__style">
-        <h1>Inventories</h1>
-        <Row className="table__style">
-          <Table striped bordered hover variant="dark">
-            <thead style={{
-              position: 'sticky',
-              top: 0
-            }}>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Warehouse</th>
-                <th>Desc</th>
-                <th>Category</th>
-                <th>Operations</th>
-              </tr>
-            </thead>
-            <tbody  >
-              {
-                data.map((val, idx)=>{
-                  return (<tr>
-                <td>{val[0]}</td>
-                <td>{val[1]}</td>
-                <td>{val[5]}</td>
-                <td>{val[3]}</td>
-                <td>{val[2]}</td>
-                <td >
-                  <Button className='table__btn' size='sm' variant="info">Edit</Button> 
-                  <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>
-                </td>
-              </tr>);
-                })
-              }
-            </tbody>
-        </Table>
-        </Row>
-        <br />
-        <Row>
-          <h4>Enter a New Inventory</h4>
-          <Form onSubmit={(e)=>formSubmitHandler(e, setData)}>
+    <Container classname="container__style">
+      <h4>Enter a New Inventory</h4>
+      <Row>
+          <Form onSubmit={(e)=>formSubmitHandler(e)}>
             <Row>
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -97,10 +60,8 @@ function Inventory() {
             </Button>
           </Form>
         </Row>
-      </Container>
-    </div>
+    </Container>
   )
-
 }
 
 function formSubmitHandler(e, callback){
@@ -134,31 +95,7 @@ function formSubmitHandler(e, callback){
     })
     }
   ).then(_=>{
-    fetchDataToDisplay(callback)
-  })
-}
-
-function fetchDataToDisplay(callback, signal=null){
-
-  fetch(SERVER+'/inventory/all', {signal:signal})
-  .then(res=>res.json())
-  .then((res)=>{
-    callback(res.message)
-  })
-}
-
-function deleteDataItem(id, callback){
-  fetch(SERVER+'/inventory/'+id.toString(),
-  {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: "DELETE",
-    })
-  .then(res=>res.json())
-  .then((_)=>{
-    fetchDataToDisplay(callback)
+    // fetchDataToDisplay(callback)
   })
 }
 
@@ -169,4 +106,4 @@ function fetchAvailableWarehouses(callback, signal=null){
     callback(res.message)
   })
 }
-export default Inventory
+export default EditInventory
