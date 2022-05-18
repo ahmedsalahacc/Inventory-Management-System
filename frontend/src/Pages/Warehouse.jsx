@@ -39,10 +39,10 @@ function Warehouse() {
             <tbody  >
               {
                 data.map((val, idx)=>{
-                  return (<tr>
-                <td key={idx}>{val[0]}</td>
-                <td key={idx+100}>{val[1]}</td>
-                <td key={idx+200}>{val[2]}</td>
+                  return (<tr key={val[0]}>
+                <td >{val[0]}</td>
+                <td >{val[1]}</td>
+                <td >{val[2]}</td>
                 <td >
                   <a className='table__btn btn btn-sm btn-info' href={"/edit/warehouse/"+val[0]}>Edit</a> 
                   <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>

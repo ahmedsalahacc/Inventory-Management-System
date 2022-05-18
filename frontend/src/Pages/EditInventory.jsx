@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import { useParams } from 'react-router-dom'
 
 import { SERVER } from '../constants'
 
@@ -7,6 +8,21 @@ import { Container, Row, Button, Form, Col } from 'react-bootstrap'
 function EditInventory() {
 
   const [warehouses, setWarehouses] = useState([])
+  const [content, setContent] = useState([])
+
+  const {id} = useParams()
+
+  useEffect(()=>{
+      const abortController = new  AbortController()
+      const signal = abortController.signal;
+
+      fetchInventoryById(id, setContent, signal)
+
+      return ()=>{
+          // cleaning up
+          abortController.abort()
+      }
+  }, [])
 
   useEffect(()=>{
     const abortController = new AbortController();
@@ -20,26 +36,27 @@ function EditInventory() {
     }
   }, [])
   return (
-    <Container classname="container__style">
-      <h4>Enter a New Inventory</h4>
+    <div>
+    <Container className="container__style">
+      <h4>Edit Inventory</h4>
       <Row>
-          <Form onSubmit={(e)=>formSubmitHandler(e)}>
+          <Form onSubmit={(e)=>formSubmitHandler(e, id)}>
             <Row>
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Inventory Name</Form.Label>
-                  <Form.Control required name="name" type="text" placeholder="Inventory Name" />
+                  <Form.Control defaultValue={content[1]} required name="name" type="text" placeholder="Inventory Name" />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label>Select a Warehouse</Form.Label>
-                  <Form.Select name="warehouse_id" aria-label="Default select example">
-                    <option value='unspecified'>select a warehouse...</option>
+                  <Form.Select defaultValue={content[2]} name="warehouse_id" aria-label="Default select example">
+                    <option key={0} value='unspecified'>select a warehouse...</option>
                     {
                       warehouses.map((value)=>{
                         return (
-                          <option value={value[0]}>{value[1]}</option>
+                          <option key={value[0]} value={value[0]}>{value[1]}</option>
                         )
                       })
                     }
@@ -49,11 +66,7 @@ function EditInventory() {
             </Row>
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Description</Form.Label>
-              <Form.Control required name="desc" type="text" placeholder="Description"/>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Category</Form.Label>
-              <Form.Control required name="category" type="text" placeholder="Category"/>
+              <Form.Control defaultValue={content[2]} required name="desc" type="text" placeholder="Description"/>
             </Form.Group>
             <Button variant="primary"  type="submit">
               Add
@@ -61,10 +74,11 @@ function EditInventory() {
           </Form>
         </Row>
     </Container>
+    </div>
   )
 }
 
-function formSubmitHandler(e, callback){
+async function formSubmitHandler(e, id){
   e.preventDefault()
 
   // extract data
@@ -72,31 +86,30 @@ function formSubmitHandler(e, callback){
   let name = target.name.value
   let warehouseId = target.warehouse_id.value
   let desc = target.desc.value
-  let category = target.category.value
   
   if (warehouseId === 'unspecified'){
     alert("Please select a warehouse")
     return
   }
 
-  //post request to add data
-  fetch(SERVER+'/inventory',
+  //PUT request to edit data
+   await fetch(SERVER+'/inventory/'+id,
     {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify({
       'name': name,
       'warehouse_id': warehouseId,
       'desc':desc,
-      'category': category
     })
     }
-  ).then(_=>{
-    // fetchDataToDisplay(callback)
-  })
+  )
+
+  window.location.href = '/inventories'
+
 }
 
 function fetchAvailableWarehouses(callback, signal=null){
@@ -105,5 +118,16 @@ function fetchAvailableWarehouses(callback, signal=null){
   .then((res)=>{
     callback(res.message)
   })
+}
+
+async function fetchInventoryById(id, callback, signal=null){
+    const URI = '/inventory/'+id
+    const URL = SERVER+URI
+
+    await fetch(URL, {signal:signal})
+    .then(res=>res.json())
+    .then(res=>
+        callback(res.message)
+    )
 }
 export default EditInventory

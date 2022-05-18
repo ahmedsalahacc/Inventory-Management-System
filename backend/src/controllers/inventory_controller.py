@@ -48,7 +48,7 @@ def createInventory():
 
         # add to database
         dbModel = InventoryModel(DB_FILENAME)
-        print(dbModel.insert(data), data)
+        dbModel.insert(data)
 
         return {
             'code': STATUS_CODE.SUCCESS,
@@ -58,12 +58,18 @@ def createInventory():
         abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
-# @TODO
-
-
 @router.route("/inventory/<id>")
 def showInventoryByID(id):
-    return "Inventory"
+    try:
+        dbModel = InventoryModel(DB_FILENAME)
+        data = dbModel.getByID(id)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': data
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/inventory/<id>", methods=['PUT'])

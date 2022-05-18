@@ -64,18 +64,19 @@ def createWarehouse():
     except:
         abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
-# @TODO
-# DEPRECATED
-
 
 @router.route("/warehouse/<id>")
 def showWareHouseByID(id):
-    dbModel = WarehouseModel(DB_FILENAME)
-    data = dbModel.getByID(id)
-    return {
-        'code': STATUS_CODE.SUCCESS,
-        'message':data
-    }
+    try:
+        dbModel = WarehouseModel(DB_FILENAME)
+        data = dbModel.getByID(id)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': data
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/warehouse/<id>", methods=['PUT'])

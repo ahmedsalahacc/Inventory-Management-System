@@ -40,13 +40,13 @@ function Inventory() {
             <tbody  >
               {
                 data.map((val, idx)=>{
-                  return (<tr>
+                  return (<tr key={val[0]}>
                 <td>{val[0]}</td>
                 <td>{val[1]}</td>
                 <td>{val[4]}</td>
                 <td>{val[2]}</td>
                 <td >
-                  <Button className='table__btn' size='sm' variant="info">Edit</Button> 
+                  <a className='table__btn btn btn-sm btn-info' href={"/edit/inventory/"+val[0]} size='sm' variant="info">Edit</a> 
                   <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>
                 </td>
               </tr>);
@@ -70,11 +70,11 @@ function Inventory() {
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Label>Select a Warehouse</Form.Label>
                   <Form.Select name="warehouse_id" aria-label="Default select example">
-                    <option value='unspecified'>select a warehouse...</option>
+                    <option key={0} value='unspecified'>select a warehouse...</option>
                     {
                       warehouses.map((value)=>{
                         return (
-                          <option value={value[0]}>{value[1]}</option>
+                          <option key={value[0]} value={value[0]}>{value[1]}</option>
                         )
                       })
                     }

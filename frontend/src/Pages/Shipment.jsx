@@ -15,7 +15,6 @@ function Shipment() {
     fetchAvailableInventories(setInventories, signal)
 
     return ()=>{
-      console.log('aborted')
       abortController.abort()
     }
   }, [])
@@ -50,7 +49,7 @@ function Shipment() {
             <tbody  >
               {
                 data.map((val, idx)=>{
-                  return (<tr>
+                  return (<tr key={val[0]}>
                 <td>{val[0]}</td>
                 <td>{val[1]}</td>
                 <td>{val[2]}</td>
@@ -136,12 +135,12 @@ function Shipment() {
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Status*</Form.Label>
                   <Form.Select required name="status" aria-label="Default select example">
-                    <option value='unspecified'>select a status...</option>
-                    <option value='new'>New</option>
-                    <option value='preparing'>Preparing</option>
-                    <option value='shipping'>Shipping</option>
-                    <option value='arrived'>Arrived</option>
-                    <option value='cancelled'>Cancelled</option>
+                    <option key={0} value='unspecified'>select a status...</option>
+                    <option key={1} value='new'>New</option>
+                    <option key={2} value='preparing'>Preparing</option>
+                    <option key={3} value='shipping'>Shipping</option>
+                    <option key={4} value='arrived'>Arrived</option>
+                    <option key={5} value='cancelled'>Cancelled</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -155,11 +154,11 @@ function Shipment() {
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Select an Inventory*</Form.Label>
                   <Form.Select required name="inventory" aria-label="Default select example">
-                    <option value='unspecified'>select an inventory...</option>
+                    <option key={0} value='unspecified'>select an inventory...</option>
                     {
                       inventories.map((value)=>{
                         return (
-                          <option value={value[0]}>{value[1]}</option>
+                          <option key={value[0]} value={value[0]}>{value[1]}</option>
                         )
                       })
                     }
@@ -238,8 +237,6 @@ function fetchDataToDisplay(callback, signal=null){
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-    console.log(res.message)
-
   })
 }
 
