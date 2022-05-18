@@ -106,7 +106,7 @@ async function formSubmitHandler(e, id){
       'desc':desc,
     })
     }
-  )
+  ).catch(e=>alert(e))
 
   window.location.href = '/inventories'
 
@@ -117,7 +117,7 @@ function fetchAvailableWarehouses(callback, signal=null){
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-  })
+  }).catch(e=>alert(e))
 }
 
 async function fetchInventoryById(id, callback, signal=null){
@@ -128,6 +128,6 @@ async function fetchInventoryById(id, callback, signal=null){
     .then(res=>res.json())
     .then(res=>
         callback(res.message)
-    )
+    ).catch(e=>alert(e))
 }
 export default EditInventory

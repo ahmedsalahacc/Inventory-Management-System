@@ -176,7 +176,8 @@ async function formSubmitHandler(e, id){
       inventory:inventory
     })
     }
-  )
+  ).catch(e=>alert(e))
+
   window.location.href = '/shipments'
 
 }
@@ -186,7 +187,7 @@ async function fetchAvailableInventories(callback, signal=null){
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-  })
+  }).catch(e=>alert(e))
 }
 
 async function getShipmentById(id, callback, signal=null){
@@ -195,7 +196,7 @@ async function getShipmentById(id, callback, signal=null){
   .then((res)=>{
     callback(res.message)
     console.log(res.message)
-  })
+  }).catch(e=>alert(e))
 }
 
 export default EditShipment

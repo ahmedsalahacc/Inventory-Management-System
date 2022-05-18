@@ -228,7 +228,7 @@ function formSubmitHandler(e, callback){
     }
   ).then(_=>{
     fetchDataToDisplay(callback)
-  })
+  }).catch(e=>alert(e))
 }
 
 function fetchDataToDisplay(callback, signal=null){
@@ -237,7 +237,7 @@ function fetchDataToDisplay(callback, signal=null){
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-  })
+  }).catch(e=>alert(e))
 }
 
 function deleteDataItem(id, callback){
@@ -252,7 +252,7 @@ function deleteDataItem(id, callback){
   .then(res=>res.json())
   .then((_)=>{
     fetchDataToDisplay(callback)
-  })
+  }).catch(e=>alert(e))
 }
 
 //@TODO for the dropdown of the warehouses
@@ -261,7 +261,7 @@ function fetchAvailableInventories(callback, signal=null){
   .then(res=>res.json())
   .then((res)=>{
     callback(res.message)
-  })
+  }).catch(e=>alert(e))
 }
 
 export default Shipment

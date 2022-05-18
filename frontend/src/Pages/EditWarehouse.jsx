@@ -69,7 +69,7 @@ async function formSubmitHandler(e, id){
     method: "PUT",
     body: JSON.stringify({'name': name, 'location': location})
     }
-  )
+  ).catch(e=>alert(e))
 
   window.location.href = '/warehouses'
 }
@@ -82,6 +82,8 @@ const URI = '/warehouse/'+id
   .then(res=>res.json())
   .then(res=>{
     callback(res.message)
+  }).catch(e=>{
+    alert(e)
   })
 }
 export default EditWarehouse
