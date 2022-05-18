@@ -31,4 +31,5 @@ Run the following commands
 * `cd backend`
 * `cd src`
 * `python app.py`
+
 NOTE THAT some minimal dependencies maybe missing this way but can be easily traced and downloaded (I think that this is the fastest method)
