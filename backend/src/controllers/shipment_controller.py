@@ -46,7 +46,16 @@ def showAllShipments():
 
 @router.route("/shipment/<id>")
 def showShipmentByID(id):
-    return"shipment"
+    try:
+        dbModel = ShipmentModel(config['DB']['DB_FILEPATH'])
+        data = dbModel.getByID(id)
+
+        return {
+            'code': STATUS_CODE.SUCCESS,
+            'message': data
+        }
+    except:
+        abort(STATUS_CODE.INTERNAL_SERVER_ERROR)
 
 
 @router.route("/shipment", methods=['POST'])

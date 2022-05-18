@@ -10,6 +10,7 @@ import Shipment from "./Pages/Shipment";
 import Home from "./Pages/Home";
 import EditWarehouse from "./Pages/EditWarehouse";
 import EditInventory from "./Pages/EditInventory";
+import EditShipment from "./Pages/EditShipment";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route exact path="/shipments" element={<Shipment />} />
           <Route exact path="/edit/warehouse/:id" element={<EditWarehouse />} />
           <Route exact path="/edit/inventory/:id" element={<EditInventory />} />
+          <Route exact path="/edit/shipment/:id" element={<EditShipment />} />
         </Routes>
       </BrowserRouter>
     </div>

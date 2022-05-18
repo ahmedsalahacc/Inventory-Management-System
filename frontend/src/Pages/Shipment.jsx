@@ -65,7 +65,7 @@ function Shipment() {
                 <td>{val[12]}</td>
                 <td>{val[13]}</td>
                 <td >
-                  <Button className='table__btn' size='sm' variant="info">Edit</Button> 
+                  <a href={"/edit/shipment/"+val[0]} className='table__btn btn btn-sm btn-info' size='sm' variant="info">Edit</a> 
                   <Button className='table__btn' size='sm' onClick={(e)=>{deleteDataItem(val[0], setData)}} variant="danger">Delete</Button>
                 </td>
               </tr>);

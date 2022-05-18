@@ -334,8 +334,29 @@ class ShipmentModel(BaseModel):
         cursor = self.conn.cursor()
 
         # sql script
-        sql_script = '''
-        SELECT * FROM shipment WHERE id = ? 
+        sql_script = f'''
+        SELECT 
+            shipment.id,
+            shipment.name,
+            shipment.status,
+            shipment.shelfIndex,
+            shipment.category,
+            shipment.address,
+            shipment.shipper_vehicle_id,
+            shipment.created_date,
+            shipment_details.shipping_time,
+            shipment_details.expected_shipping_date,
+            shipment_details.shipped_from,
+            shipment_details.shipped_to,
+            inventory.name,
+            warehouse.name
+        FROM shipment JOIN shipment_details
+        ON shipment.shipment_details_id = shipment_details.id
+        JOIN inventory
+        ON shipment.inventory_id = inventory.id
+        JOIN warehouse
+        ON inventory.warehouse_id = warehouse.id
+        WHERE shipment.id=?
         '''
 
         # executing script
