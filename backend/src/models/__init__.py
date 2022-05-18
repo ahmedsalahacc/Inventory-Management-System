@@ -112,7 +112,6 @@ class DBinit:
         CREATE TABLE inventory(
             id CHARACTER(10) NOT NULL PRIMARY KEY,
             name TEXT NOT NULL,
-            category TEXT NOT NULL,
             desc TEXT NULL,
             warehouse_id CHARACTER(10) NULL,
             FOREIGN KEY(warehouse_id) REFERENCES warehouse(id) ON DELETE CASCADE

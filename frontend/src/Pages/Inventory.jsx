@@ -34,7 +34,6 @@ function Inventory() {
                 <th>Name</th>
                 <th>Warehouse</th>
                 <th>Desc</th>
-                <th>Category</th>
                 <th>Operations</th>
               </tr>
             </thead>
@@ -44,8 +43,7 @@ function Inventory() {
                   return (<tr>
                 <td>{val[0]}</td>
                 <td>{val[1]}</td>
-                <td>{val[5]}</td>
-                <td>{val[3]}</td>
+                <td>{val[4]}</td>
                 <td>{val[2]}</td>
                 <td >
                   <Button className='table__btn' size='sm' variant="info">Edit</Button> 
@@ -88,10 +86,6 @@ function Inventory() {
               <Form.Label>Description</Form.Label>
               <Form.Control required name="desc" type="text" placeholder="Description"/>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Category</Form.Label>
-              <Form.Control required name="category" type="text" placeholder="Category"/>
-            </Form.Group>
             <Button variant="primary"  type="submit">
               Add
             </Button>
@@ -111,7 +105,6 @@ function formSubmitHandler(e, callback){
   let name = target.name.value
   let warehouseId = target.warehouse_id.value
   let desc = target.desc.value
-  let category = target.category.value
   
   if (warehouseId === 'unspecified'){
     alert("Please select a warehouse")
@@ -130,7 +123,6 @@ function formSubmitHandler(e, callback){
       'name': name,
       'warehouse_id': warehouseId,
       'desc':desc,
-      'category': category
     })
     }
   ).then(_=>{

@@ -11,7 +11,7 @@ from controllers.utils import parseMsg, STATUS_CODE
 router = Blueprint("inventory", __name__)
 DB_FILENAME = config['DB']['DB_FILEPATH']
 # sets has O(1) search time as it uses hashing to access its values
-REQUIRED_KEYS_SET = ('name', 'category', 'desc', 'warehouse_id')
+REQUIRED_KEYS_SET = ('name', 'desc', 'warehouse_id')
 
 
 ##---- Routes ----##

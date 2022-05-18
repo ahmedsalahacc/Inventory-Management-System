@@ -8,7 +8,6 @@ class InventoryModel(BaseModel):
     inventory(
        id CHARACTER(10) NOT NULL PRIMARY KEY,
         name TEXT NOT NULL,
-        category TEXT NOT NULL,
         desc TEXT NULL,
         warehouse_id CHARACTER(10) NULL,
     )
@@ -24,14 +23,14 @@ class InventoryModel(BaseModel):
         Parameters
         ----------
         data_tuple: tuple
-            tuple of new values (name, category, desc, warehouse_id)
+            tuple of new values (name, desc, warehouse_id)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
 
         # sql script
         sql_script = '''
-        INSERT INTO inventory VALUES (?, ?, ?, ?, ?)
+        INSERT INTO inventory VALUES (?, ?, ?, ?)
         '''
 
         # executing script
@@ -77,7 +76,7 @@ class InventoryModel(BaseModel):
         id: str
             id of the record in the db
         new_data: tuple
-            tuple of new values (name, category, desc, warehouse_id)
+            tuple of new values (name, desc, warehouse_id)
         '''
         # aquiring cursor
         cursor = self.conn.cursor()
@@ -85,8 +84,7 @@ class InventoryModel(BaseModel):
         # sql script
         sql_script = '''
         UPDATE inventory
-        SET name = ?,
-            category = ?,     
+        SET name = ?,    
             desc = ?,
             warehouse_id = ? 
         WHERE id=?
@@ -119,7 +117,7 @@ class InventoryModel(BaseModel):
 
         # sql script
         sql_script = '''
-        SELECT inventory.id, inventory.name, inventory.category,
+        SELECT inventory.id, inventory.name, 
             inventory.desc, inventory.warehouse_id,
             warehouse.name, warehouse.location
         FROM inventory JOIN warehouse
@@ -158,12 +156,12 @@ class InventoryModel(BaseModel):
 
         # sql script
         sql_script = f'''
-        SELECT inventory.id, inventory.name, inventory.category,
+        SELECT inventory.id, inventory.name, 
             inventory.desc, inventory.warehouse_id,
             warehouse.name
         FROM inventory JOIN warehouse
         ON inventory.warehouse_id = warehouse.id
-        ORDER BY category {order} 
+        ORDER BY inventory.name {order} 
         '''
 
         # executing script

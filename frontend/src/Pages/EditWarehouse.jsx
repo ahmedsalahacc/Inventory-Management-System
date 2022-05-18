@@ -51,7 +51,7 @@ function EditWarehouse() {
   )
 }
 
-function formSubmitHandler(e, id){
+async function formSubmitHandler(e, id){
   e.preventDefault()
 
   // extract data
@@ -60,7 +60,7 @@ function formSubmitHandler(e, id){
   let location = target.location.value
 
   //post request to add data
-  fetch(SERVER+'/warehouse/'+id,
+  await fetch(SERVER+'/warehouse/'+id,
     {
     headers: {
       'Accept': 'application/json',
