@@ -1,9 +1,7 @@
 #!/bin/bash
 cd backend
-pip install virtualenv
-virtualenv venv
-venv/Scripts/activate.bat
-pip install -r requirements.txt
-
+pip install conda
+conda env create -n myenv --file env.yml
+conda activate myenv
 cd src
 python app.py
