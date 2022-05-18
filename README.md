@@ -1,6 +1,6 @@
 # Inventory-Management-System
 
-# How to download
+## How to run
 ### For the frontend
 * just run `part2.sh`
 
