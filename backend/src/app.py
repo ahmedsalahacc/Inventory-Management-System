@@ -59,4 +59,4 @@ app = createFlaskApp()
 
 if __name__ == "__main__":
     # run flask app
-    app.run(debug=config['ENV']['DEBUG'], port=config['ENV']['PORT'])
+    app.run(host='0.0.0.0', debug=config['ENV']['DEBUG'], port=config['ENV']['PORT'])
