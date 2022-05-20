@@ -21,7 +21,7 @@ Then you will find the backend operating on http://localhost:5000
 Run the following commands
 * `cd backend`
 * `virtualenv venv`
-* If you are running python --> run `venv/Scripts/activate.bat` else, run --> `source venv/Scripts/activate`
+* If you are running python --> run `venv/lib/activate.bat` else, run --> `source venv/Scripts/activate`
 * `pip install -r requirements.txt`
 * `cd src`
 * `python app.py`
